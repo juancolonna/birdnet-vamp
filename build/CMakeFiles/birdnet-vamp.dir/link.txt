@@ -1,0 +1,1 @@
+/usr/bin/g++ -fPIC -O3 -DNDEBUG -shared -Wl,-soname,birdnet-vamp.so -o birdnet-vamp.so "CMakeFiles/birdnet-vamp.dir/BirdNetPlugin.cpp.o"  -lvamp-sdk 

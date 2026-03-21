@@ -1,0 +1,97 @@
+#!/bin/bash
+# install.sh — Installation script for the BirdNET VAMP plugin.
+#
+# This script performs the following steps:
+#   1. Installs system build dependencies (cmake, g++, vamp-plugin-sdk).
+#   2. Creates a Conda environment (birdnet-plugin) and installs the birdnet package.
+#   3. Compiles the VAMP plugin and copies it to ~/vamp/.
+#   4. Configures VAMP_PATH in ~/.bashrc.
+#   5. Creates a desktop shortcut named Audacity-BirdNet pointing to the
+#      AppImage bundled in this repository.
+#
+# The AppImage is self-contained and does not interfere with any existing
+# Audacity installation on the system.
+#
+# Requirements:
+#   - Miniconda or Anaconda installed at ~/miniconda3
+#   - Ubuntu 22.04 or compatible Debian-based system
+#   - Internet connection (for pip install only)
+#
+# Usage:
+#   bash install.sh
+
+set -e
+
+REPO_DIR="$(realpath "$(dirname "$0")")"
+VAMP_DIR="$HOME/vamp"
+APPIMAGE_NAME="audacity-linux-3.7.7-x64-22.04.AppImage"
+APPIMAGE_PATH="$REPO_DIR/$APPIMAGE_NAME"  # AppImage used directly from the repository
+CONDA_ENV="birdnet-plugin"
+CONDA_PYTHON="$HOME/miniconda3/envs/$CONDA_ENV/bin/python3"
+
+
+# ── Create required directories ───────────────────────────────────────────────
+mkdir -p "$VAMP_DIR"
+mkdir -p "$HOME/.local/share/applications"
+
+# ── Install system build dependencies ────────────────────────────────────────
+echo "==> Installing system dependencies..."
+sudo apt-get update -qq
+sudo apt-get install -y cmake g++ vamp-plugin-sdk
+
+# ── Create Conda environment and install birdnet ──────────────────────────────
+echo "==> Setting up Conda environment '$CONDA_ENV'..."
+source "$HOME/miniconda3/etc/profile.d/conda.sh"
+
+if conda env list | grep -q "^$CONDA_ENV "; then
+    echo "   Environment '$CONDA_ENV' already exists, skipping creation."
+else
+    conda create -y -n "$CONDA_ENV" python=3.12
+fi
+
+conda run -n "$CONDA_ENV" pip install birdnet --quiet
+
+# ── Compile the VAMP plugin ───────────────────────────────────────────────────
+echo "==> Compiling VAMP plugin..."
+mkdir -p build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+make -j$(nproc)
+cd ..
+
+# ── Install plugin files ──────────────────────────────────────────────────────
+echo "==> Installing plugin to $VAMP_DIR..."
+cp build/birdnet-vamp.so "$VAMP_DIR/"
+cp birdnet_run.py "$VAMP_DIR/"
+
+# ── Configure VAMP_PATH in ~/.bashrc ─────────────────────────────────────────
+if ! grep -q "VAMP_PATH" "$HOME/.bashrc"; then
+    echo "export VAMP_PATH=\"$VAMP_DIR\"" >> "$HOME/.bashrc"
+fi
+
+# ── Create desktop shortcut with VAMP_PATH set ───────────────────────────────
+echo "==> Creating Audacity-BirdNet desktop shortcut..."
+cat > "$HOME/.local/share/applications/audacity-birdnet.desktop" << DESKTOP
+[Desktop Entry]
+Name=Audacity-BirdNet
+Comment=Audacity Audio Editor with BirdNET Plugin
+Exec=env VAMP_PATH=$VAMP_DIR $APPIMAGE_PATH %F
+Icon=audacity
+Terminal=false
+Type=Application
+Categories=Audio;AudioVideo;
+DESKTOP
+update-desktop-database "$HOME/.local/share/applications/" 2>/dev/null || true
+
+source "$HOME/.bashrc"
+
+echo ""
+echo "Installation complete!"
+echo "Python interpreter: $CONDA_PYTHON"
+echo ""
+echo "Launch Audacity-BirdNet from the application menu or run:"
+echo "  VAMP_PATH=$VAMP_DIR $APPIMAGE_PATH"
+echo ""
+echo "Inside Audacity:"
+echo "  1. Open an audio file"
+echo "  2. Go to Analyze -> BirdNET"
+echo "  3. Detections will appear as labeled regions on the track"
