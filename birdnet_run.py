@@ -32,10 +32,7 @@ import sys
 import json
 import birdnet
 
-WINDOW_DURATION = 3.0  # BirdNET inference window size in seconds
-
-
-def merge_detections(detections, window=WINDOW_DURATION):
+def merge_detections(detections):
     """
     Merge consecutive or overlapping detections of the same species.
 
@@ -47,7 +44,6 @@ def merge_detections(detections, window=WINDOW_DURATION):
 
     Args:
         detections : List of detection dicts sorted by time_s.
-        window     : Duration of each detection segment in seconds (default: 3.0).
 
     Returns:
         List of merged detection dicts.
@@ -60,12 +56,11 @@ def merge_detections(detections, window=WINDOW_DURATION):
 
     merged = []
     current = dict(detections[0])
-    current["end_s"]         = current["time_s"] + window
     current["_conf_sum"]     = current["confidence"]
     current["_conf_count"]   = 1
 
     for det in detections[1:]:
-        det_end = det["time_s"] + window
+        det_end = det["end_s"]
         same_species = det["species"] == current["species"]
         overlapping  = det["time_s"] <= current["end_s"]
 
@@ -116,33 +111,22 @@ def main():
         overlap_duration_s=overlap,
     )
 
-    # Extract prediction tensors and metadata
-    probs   = result.species_probs[0]  # shape: [n_segments, top_k]
-    ids     = result.species_ids[0]    # shape: [n_segments, top_k]
-    species = result.species_list      # full list of species labels ("Scientific_Common")
-    hop_dur = result.hop_duration_s    # actual step size in seconds (= stride)
-
+    data = result.to_structured_array()
     detections = []
-    for seg_idx in range(len(probs)):
-        time_s = seg_idx * hop_dur
-        for k in range(probs.shape[1]):
-            conf = float(probs[seg_idx][k])
-            if conf < threshold:
-                continue
-
-            # Map index to species label and split into scientific / common name
-            sp_idx     = int(ids[seg_idx][k])
-            label      = species[sp_idx]
-            parts      = label.split("_", 1)
-            scientific = parts[0]
-            common     = parts[1] if len(parts) > 1 else parts[0]
-
-            detections.append({
-                "species":    common,
-                "scientific": scientific,
-                "confidence": round(conf, 4),
-                "time_s":     float(time_s),
-            })
+    
+    for row in data:
+        species    = row['species_name']
+        scientific = species.split("_")[0]
+        common     = species.split("_")[1]
+        conf       = float(row['confidence'])
+        
+        detections.append({
+            "species":    common,
+            "scientific": scientific,
+            "confidence": round(conf, 4),
+            "time_s":     float(row['start_time']),
+            "end_s":      float(row['end_time']),
+        })
 
     # Merge consecutive/overlapping detections of the same species
     detections = merge_detections(detections)
