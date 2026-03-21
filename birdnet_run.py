@@ -31,6 +31,8 @@ Output:
 import sys
 import json
 import birdnet
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # suppress TensorFlow logs
 
 def merge_detections(detections):
     """
