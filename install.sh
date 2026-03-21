@@ -4,10 +4,10 @@
 # This script performs the following steps:
 #   1. Installs system build dependencies (cmake, g++, vamp-plugin-sdk).
 #   2. Creates a Conda environment (birdnet-plugin) and installs the birdnet package.
-#   3. Compiles the VAMP plugin and copies it to ~/vamp/.
-#   4. Configures VAMP_PATH in ~/.bashrc.
-#   5. Creates a desktop shortcut named Audacity-BirdNet pointing to the
-#      AppImage bundled in this repository.
+#   3. Compiles the VAMP plugin into the build/ directory.
+#   4. Copies birdnet_run.py into build/ alongside the plugin.
+#   5. Creates a desktop shortcut named Audacity-BirdNet that launches the
+#      bundled AppImage with VAMP_PATH pointing to build/.
 #
 # The AppImage is self-contained and does not interfere with any existing
 # Audacity installation on the system.
@@ -23,15 +23,12 @@
 set -e
 
 REPO_DIR="$(realpath "$(dirname "$0")")"
-VAMP_DIR="$HOME/vamp"
-APPIMAGE_NAME="audacity-linux-3.7.7-x64-22.04.AppImage"
-APPIMAGE_PATH="$REPO_DIR/$APPIMAGE_NAME"  # AppImage used directly from the repository
+VAMP_DIR="$REPO_DIR/build"
+APPIMAGE_PATH="$REPO_DIR/audacity-linux-3.7.7-x64-22.04.AppImage"
 CONDA_ENV="birdnet-plugin"
 CONDA_PYTHON="$HOME/miniconda3/envs/$CONDA_ENV/bin/python3"
 
-
 # ── Create required directories ───────────────────────────────────────────────
-mkdir -p "$VAMP_DIR"
 mkdir -p "$HOME/.local/share/applications"
 
 # ── Install system build dependencies ────────────────────────────────────────
@@ -53,22 +50,15 @@ conda run -n "$CONDA_ENV" pip install birdnet --quiet
 
 # ── Compile the VAMP plugin ───────────────────────────────────────────────────
 echo "==> Compiling VAMP plugin..."
-mkdir -p build && cd build
+mkdir -p "$VAMP_DIR" && cd "$VAMP_DIR"
 cmake .. -DCMAKE_BUILD_TYPE=Release
 make -j$(nproc)
-cd ..
+cd "$REPO_DIR"
 
-# ── Install plugin files ──────────────────────────────────────────────────────
-echo "==> Installing plugin to $VAMP_DIR..."
-cp build/birdnet-vamp.so "$VAMP_DIR/"
-cp birdnet_run.py "$VAMP_DIR/"
+# ── Copy inference script to build/ ──────────────────────────────────────────
+cp "$REPO_DIR/birdnet_run.py" "$VAMP_DIR/"
 
-# ── Configure VAMP_PATH in ~/.bashrc ─────────────────────────────────────────
-if ! grep -q "VAMP_PATH" "$HOME/.bashrc"; then
-    echo "export VAMP_PATH=\"$VAMP_DIR\"" >> "$HOME/.bashrc"
-fi
-
-# ── Create desktop shortcut with VAMP_PATH set ───────────────────────────────
+# ── Create desktop shortcut ───────────────────────────────────────────────────
 echo "==> Creating Audacity-BirdNet desktop shortcut..."
 cat > "$HOME/.local/share/applications/audacity-birdnet.desktop" << DESKTOP
 [Desktop Entry]
@@ -82,14 +72,12 @@ Categories=Audio;AudioVideo;
 DESKTOP
 update-desktop-database "$HOME/.local/share/applications/" 2>/dev/null || true
 
-source "$HOME/.bashrc"
-
 echo ""
 echo "Installation complete!"
 echo "Python interpreter: $CONDA_PYTHON"
 echo ""
 echo "Launch Audacity-BirdNet from the application menu or run:"
-echo "  VAMP_PATH=$VAMP_DIR $APPIMAGE_PATH"
+echo "  VAMP_PATH=$PWD/build ./audacity-linux-3.7.7-x64-22.04.AppImage"
 echo ""
 echo "Inside Audacity:"
 echo "  1. Open an audio file"

@@ -2,13 +2,16 @@
  * BirdNetPlugin.cpp — VAMP plugin implementation for bird species detection.
  *
  * Processing strategy:
- *   1. process()             — accumulates all input samples into m_audioBuffer.
+ *   1. process()              — accumulates all input samples into m_audioBuffer.
  *   2. getRemainingFeatures() — writes a temporary WAV file, invokes birdnet_run.py
- *                              via popen(), parses the JSON output, and returns
- *                              labeled VAMP features with timestamps.
+ *                               via popen(), parses the JSON output, and returns
+ *                               labeled VAMP features with timestamps.
  *
  * The Python subprocess (birdnet_run.py) runs the BirdNET v2.4 acoustic model
  * using the TensorFlow backend inside a dedicated Conda environment.
+ *
+ * Paths are resolved from the VAMP_PATH environment variable, which points to
+ * the directory containing both the plugin (.so) and the inference script (.py).
  */
 
 #include "BirdNetPlugin.h"
@@ -32,12 +35,14 @@ BirdNetPlugin::BirdNetPlugin(float inputSampleRate)
     , m_topK(3)
     , m_stride(3.0f)
 {
-    const char* home = getenv("HOME");
-    std::string homeDir = std::string(home ? home : "~");
-    m_pythonPath = homeDir + "/miniconda3/envs/birdnet-plugin/bin/python3";
-    m_scriptPath = homeDir + "/vamp/birdnet_run.py";
-    m_logPath    = homeDir + "/vamp/birdnet_debug.log";
-    m_wavPath    = homeDir + "/vamp/birdnet_analise.wav";
+    const char* home     = getenv("HOME");
+    const char* vampPath = getenv("VAMP_PATH");
+
+    std::string pluginDir = std::string(vampPath ? vampPath : "");
+
+    m_pythonPath = std::string(home ? home : "") + "/miniconda3/envs/birdnet-plugin/bin/python3";
+    m_scriptPath = pluginDir + "/birdnet_run.py";
+    m_wavPath    = pluginDir + "/birdnet_analise.wav";
 }
 
 BirdNetPlugin::~BirdNetPlugin() {}
@@ -47,12 +52,6 @@ BirdNetPlugin::~BirdNetPlugin() {}
 bool BirdNetPlugin::initialise(size_t, size_t, size_t blockSize) {
     m_blockSize = (int)blockSize;
     m_audioBuffer.clear();
-
-    std::ofstream log(m_logPath);
-    log << "initialise() called, blockSize=" << m_blockSize << "\n";
-    log << "scriptPath=" << m_scriptPath << "\n";
-    log << "wavPath=" << m_wavPath << "\n";
-
     return true;
 }
 
@@ -64,8 +63,12 @@ void BirdNetPlugin::reset() {
 
 Plugin::FeatureSet
 BirdNetPlugin::process(const float* const* inputBuffers,
-                       Vamp::RealTime /*timestamp*/)
+                       Vamp::RealTime timestamp)
 {
+    // Capture the start time from the first processed block
+    if (m_audioBuffer.empty())
+        m_startTime = timestamp;
+
     // Accumulate mono samples into the audio buffer
     for (int i = 0; i < m_blockSize; i++)
         m_audioBuffer.push_back(inputBuffers[0][i]);
@@ -76,16 +79,10 @@ BirdNetPlugin::process(const float* const* inputBuffers,
 // ── Full analysis at end of stream ───────────────────────────────────────────
 
 Plugin::FeatureSet BirdNetPlugin::getRemainingFeatures() {
-    std::ofstream log(m_logPath, std::ios::app);
-    log << "getRemainingFeatures() called, buffer: "
-        << m_audioBuffer.size() << " samples\n";
-
     FeatureSet output;
 
-    if (m_audioBuffer.empty()) {
-        log << "ERROR: audio buffer is empty\n";
+    if (m_audioBuffer.empty())
         return output;
-    }
 
     // Write accumulated samples to a temporary WAV file
     writeWAV(m_wavPath,
@@ -93,42 +90,32 @@ Plugin::FeatureSet BirdNetPlugin::getRemainingFeatures() {
              (int)m_audioBuffer.size(),
              (int)m_inputSampleRate);
     m_audioBuffer.clear();
-    log << "WAV saved to: " << m_wavPath << "\n";
 
-    // Build the subprocess command
+    // Build and run the Python subprocess command
     std::ostringstream cmd;
     cmd << m_pythonPath << " " << m_scriptPath
         << " " << m_wavPath
         << " " << m_threshold
         << " " << m_topK
-        << " " << m_stride
-        << " 2>>" << m_logPath;
-    log << "Running: " << cmd.str() << "\n";
-    log.flush();
+        << " " << m_stride;
 
-    // Launch Python subprocess and capture stdout
     FILE* pipe = popen(cmd.str().c_str(), "r");
-    if (!pipe) {
-        log << "ERROR: popen failed\n";
-        return output;
-    }
+    if (!pipe) return output;
 
-    std::string output_str;
+    // Read JSON output from stdout
+    std::string json;
     char buf[512];
     while (fgets(buf, sizeof(buf), pipe))
-        output_str += buf;
+        json += buf;
     pclose(pipe);
 
-    log << "Received: " << output_str.size() << " bytes\n";
-    log << "Output: " << output_str << "\n";
-
     // Parse detections and build VAMP features
-    for (auto& d : parseJSON(output_str)) {
+    for (auto& d : parseJSON(json)) {
         Feature f;
         f.hasTimestamp = true;
-        f.timestamp    = RealTime::fromSeconds(d.time_s);
+        f.timestamp    = RealTime::fromSeconds(d.time_s) + m_startTime;
         f.hasDuration  = true;
-        f.duration     = RealTime::fromSeconds(3.0);
+        f.duration     = RealTime::fromSeconds(d.end_s - d.time_s);
         f.label        = d.species +
                          " (" +
                          std::to_string((int)std::round(d.confidence * 100)) +
@@ -137,11 +124,8 @@ Plugin::FeatureSet BirdNetPlugin::getRemainingFeatures() {
         output[0].push_back(f);
     }
 
-    log << "Labels generated: " << output[0].size() << "\n";
-
     // Remove temporary WAV file
     std::remove(m_wavPath.c_str());
-    log << "Temporary WAV removed.\n";
 
     return output;
 }
@@ -212,6 +196,7 @@ BirdNetPlugin::parseJSON(const std::string& json) const
         d.species    = str("species");
         d.confidence = num("confidence");
         d.time_s     = num("time_s");
+        d.end_s      = num("end_s");
 
         if (!d.species.empty())
             detections.push_back(d);

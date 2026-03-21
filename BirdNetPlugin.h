@@ -59,8 +59,9 @@ private:
     // Holds a single BirdNET detection parsed from JSON output
     struct Detection {
         std::string species;     // common name
-        float       confidence;  // confidence score [0, 1]
-        float       time_s;      // segment start time in seconds
+        float       confidence;  // average confidence score [0, 1]
+        float       time_s;      // merged segment start time in seconds
+        float       end_s;       // merged segment end time in seconds
     };
 
     // Parses the JSON array returned by birdnet_run.py
@@ -70,10 +71,10 @@ private:
     std::vector<float> m_audioBuffer;  // accumulates all input samples
     std::string        m_pythonPath;   // path to conda env Python binary
     std::string        m_scriptPath;   // path to birdnet_run.py
-    std::string        m_logPath;      // path to debug log file
     std::string        m_wavPath;      // path to temporary WAV file
     int                m_blockSize;    // VAMP block size (samples per call)
     int                m_topK;         // max species per segment
     float              m_stride;       // sliding window step in seconds
     float              m_threshold;    // minimum confidence threshold
+    Vamp::RealTime     m_startTime;    // timestamp of the first processed block
 };
