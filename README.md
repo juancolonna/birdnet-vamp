@@ -1,4 +1,4 @@
-# BirdNET VAMP Plugin for Audacity
+# 🎶 🐦‍⬛ BirdNET VAMP Plugin for Audacity
 
 A VAMP plugin for Audacity that runs [BirdNET v2.4](https://github.com/birdnet-team/birdnet) inference to automatically detect and label bird vocalizations in audio recordings.
 
@@ -21,9 +21,8 @@ Detections appear as labeled regions directly on the Audacity track, with the sp
 
 ## Requirements
 
-- Ubuntu 22.04 or compatible Debian-based Linux system
-- [Miniconda](https://docs.conda.io/en/latest/miniconda.html) or Anaconda installed at `~/miniconda3`
-- Internet connection (for Python package installation only)
+- Ubuntu 22.04
+- [Miniconda](https://docs.conda.io/en/latest/miniconda.html) installed at `~/miniconda3`
 - `cmake`, `g++`, and `vamp-plugin-sdk` (installed automatically by `install.sh`)
 
 ---
@@ -164,28 +163,10 @@ If you use this plugin in your research, please cite:
 }
 ```
 
-Also cite the BirdNET model:
-
-```bibtex
-@article{kahl2021birdnet,
-  title   = {BirdNET: A deep learning solution for avian diversity monitoring},
-  author  = {Kahl, Stefan and Wood, Connor M and Eibl, Maximilian and Klinck, Holger},
-  journal = {Ecological Informatics},
-  volume  = {61},
-  pages   = {101236},
-  year    = {2021},
-  publisher = {Elsevier}
-}
-```
-
 ---
 
-## License
+## License and Author
 
 MIT License — see [LICENSE](LICENSE) for details.
-
----
-
-## Author
 
 **Prof. Dr. Juan G. Colonna** — [github.com/juancolonna](https://github.com/juancolonna)
