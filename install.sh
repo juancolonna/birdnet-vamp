@@ -50,6 +50,7 @@ conda run -n "$CONDA_ENV" pip install birdnet
 
 # ── Compile the VAMP plugin ───────────────────────────────────────────────────
 echo "==> Compiling VAMP plugin..."
+rm -rf "$VAMP_DIR"
 mkdir -p "$VAMP_DIR" && cd "$VAMP_DIR"
 cmake .. -DCMAKE_BUILD_TYPE=Release
 make -j$(nproc)
