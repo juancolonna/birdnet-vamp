@@ -1,4 +1,4 @@
-# 🎶 🐦‍⬛ BirdNET VAMP Plugin for Audacity
+# 🎶 🐦‍⬛ BirdNet VAMP Plugin for Audacity
 
 A VAMP plugin for Audacity that runs [BirdNET v2.4](https://github.com/birdnet-team/birdnet) inference to automatically detect and label bird vocalizations in audio recordings.
 
