@@ -1,8 +1,0 @@
-[
-{
-  "directory": "/home/juan/Research/Codes/BirdPlugin/build",
-  "command": "/usr/bin/g++ -Dbirdnet_vamp_EXPORTS -I/usr/include/vamp-sdk -O3 -DNDEBUG -std=gnu++17 -fPIC -o CMakeFiles/birdnet-vamp.dir/BirdNetPlugin.cpp.o -c /home/juan/Research/Codes/BirdPlugin/BirdNetPlugin.cpp",
-  "file": "/home/juan/Research/Codes/BirdPlugin/BirdNetPlugin.cpp",
-  "output": "CMakeFiles/birdnet-vamp.dir/BirdNetPlugin.cpp.o"
-}
-]

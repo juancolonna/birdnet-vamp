@@ -1,3 +1,0 @@
-/home/juan/Research/Codes/BirdPlugin/build/CMakeFiles/birdnet-vamp.dir
-/home/juan/Research/Codes/BirdPlugin/build/CMakeFiles/edit_cache.dir
-/home/juan/Research/Codes/BirdPlugin/build/CMakeFiles/rebuild_cache.dir
