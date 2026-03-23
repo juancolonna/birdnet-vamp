@@ -46,7 +46,7 @@ else
     conda create -y -n "$CONDA_ENV" python=3.12
 fi
 
-conda run -n "$CONDA_ENV" pip install birdnet --quiet
+conda run -n "$CONDA_ENV" pip install birdnet
 
 # ── Compile the VAMP plugin ───────────────────────────────────────────────────
 echo "==> Compiling VAMP plugin..."
