@@ -33,7 +33,7 @@ Detections appear as labeled regions directly on the Audacity track, with the sp
 
 ```bash
 git clone https://github.com/juancolonna/birdnet-vamp-plugin.git
-cd birdnet-vamp-plugin
+cd birdnet-vamp
 ```
 
 ### 2. Run the installation script
