@@ -29,9 +29,13 @@ Detections appear as labeled regions directly on the Audacity track, with the sp
 
 ## Installation
 
+> **Note:** This repository uses Git LFS to store the Audacity AppImage.
+> Make sure Git LFS is installed before cloning: `sudo apt install git-lfs`
+
 ### 1. Clone the repository
 
 ```bash
+sudo apt install git-lfs
 git clone https://github.com/juancolonna/birdnet-vamp-plugin.git
 cd birdnet-vamp
 ```
