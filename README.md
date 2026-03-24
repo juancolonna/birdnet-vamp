@@ -147,6 +147,23 @@ birdnet-vamp-plugin/
 
 ---
 
+## Exporting generated labels
+
+After run the plugin a new 'Track' with labels will appear, it can be directly exported for futher use, go to **File → Export Other → Export Labels**, it will produce a file on this format:
+
+After running the plugin, a new 'BirdNet' track with labels will appear. It can be directly exported for further use. Go to **File → Export Other → Export Labels**; it will produce a file in this format:
+
+``` 
+0.000000	3.000000	Black-capped Chickadee (82%)
+9.000000	12.000000	House Finch (65%)
+42.000000	45.000000	Dark-eyed Junco (73%)
+54.000000	57.000000	House Finch (62%)
+60.000000	63.000000	Dark-eyed Junco (56%)
+72.000000	75.000000	House Finch (60%)
+```
+
+---
+
 ## Troubleshooting
 
 **Plugin does not appear in Analyze menu**
