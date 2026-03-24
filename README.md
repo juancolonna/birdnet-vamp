@@ -149,8 +149,6 @@ birdnet-vamp-plugin/
 
 ## Exporting generated labels
 
-After run the plugin a new 'Track' with labels will appear, it can be directly exported for futher use, go to **File → Export Other → Export Labels**, it will produce a file on this format:
-
 After running the plugin, a new 'BirdNet' track with labels will appear. It can be directly exported for further use. Go to **File → Export Other → Export Labels**; it will produce a file in this format:
 
 ``` 
