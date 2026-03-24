@@ -52,6 +52,7 @@ bash install.sh
 ```
 
 The script will automatically:
+- Downloads the Audacity 3.7.7 AppImage if not already present and verifies its integrity via SHA256 checksum.
 - Install system build dependencies (`cmake`, `g++`, `vamp-plugin-sdk`)
 - Create a Conda environment named `birdnet-plugin` with Python 3.12
 - Install the `birdnet` Python package inside the Conda environment
