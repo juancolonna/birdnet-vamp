@@ -1,5 +1,10 @@
 # 🎶 🐦‍⬛ BirdNet VAMP Plugin for Audacity
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
+[![Audacity 3.7.7](https://img.shields.io/badge/Audacity-3.7.7-2C7ED6.svg)](https://www.audacityteam.org/)
+[![C++](https://img.shields.io/badge/C%2B%2B-supported-00599C.svg)](https://isocpp.org/)
+
 A VAMP plugin for Audacity that runs [BirdNET v2.4](https://github.com/birdnet-team/birdnet) inference to automatically detect and label bird vocalizations in audio recordings.
 
 Detections appear as labeled regions directly on the Audacity track, with the species name and confidence score. Consecutive or overlapping detections of the same species are automatically merged into a single label.
@@ -76,7 +81,8 @@ VAMP_PATH=$PWD/build ./audacity-linux-3.7.7-x64-22.04.AppImage
 
 > Run this command from inside the cloned repository directory.
 
----
+---[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
 
 ## Usage
 
