@@ -30,21 +30,17 @@ Detections appear as labeled regions directly on the Audacity track, with the sp
 
 ## Requirements
 
-- Ubuntu 22.04
+- Ubuntu 22.04 with internet connection 
 - [Miniconda](https://docs.conda.io/en/latest/miniconda.html) installed at `~/miniconda3`
-- `cmake`, `g++`, and `vamp-plugin-sdk` (installed automatically by `install.sh`)
+- `cmake`, `g++`, and `vamp-plugin-sdk` (installed automatically by `install.sh` script)
 
 ---
 
 ## Installation
 
-> **Note:** This repository uses Git LFS to store the Audacity AppImage.
-> Make sure Git LFS is installed before cloning: `sudo apt install git-lfs`
-
 ### 1. Clone the repository
 
 ```bash
-sudo apt install git-lfs
 git clone https://github.com/juancolonna/birdnet-vamp-plugin.git
 cd birdnet-vamp
 ```
