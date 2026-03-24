@@ -78,9 +78,6 @@ VAMP_PATH=$PWD/build ./audacity-linux-3.7.7-x64-22.04.AppImage
 
 > Run this command from inside the cloned repository directory.
 
----[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
-
 ## Usage
 
 1. Open an audio file in Audacity (**File → Open**)
@@ -113,6 +110,19 @@ House Finch (61%)
 
 Where `XX%` is the average confidence score across all merged segments.
 
+### Exporting generated labels
+
+After running the plugin, a new 'BirdNet' track with labels will appear. It can be directly exported for further use. Go to **File → Export Other → Export Labels**; it will produce a file in this format:
+
+``` 
+0.000000	3.000000	Black-capped Chickadee (82%)
+9.000000	12.000000	House Finch (65%)
+42.000000	45.000000	Dark-eyed Junco (73%)
+54.000000	57.000000	House Finch (62%)
+60.000000	63.000000	Dark-eyed Junco (56%)
+72.000000	75.000000	House Finch (60%)
+```
+
 ---
 
 ## Project structure
@@ -141,21 +151,6 @@ birdnet-vamp-plugin/
 5. Consecutive or overlapping detections of the same species are merged into single labels
 6. The plugin reads the JSON, creates VAMP features, and displays them as labeled regions in Audacity
 7. The temporary WAV file is deleted after processing
-
----
-
-## Exporting generated labels
-
-After running the plugin, a new 'BirdNet' track with labels will appear. It can be directly exported for further use. Go to **File → Export Other → Export Labels**; it will produce a file in this format:
-
-``` 
-0.000000	3.000000	Black-capped Chickadee (82%)
-9.000000	12.000000	House Finch (65%)
-42.000000	45.000000	Dark-eyed Junco (73%)
-54.000000	57.000000	House Finch (62%)
-60.000000	63.000000	Dark-eyed Junco (56%)
-72.000000	75.000000	House Finch (60%)
-```
 
 ---
 
@@ -195,4 +190,4 @@ If you use this plugin in your research, please cite:
 
 MIT License — see [LICENSE](LICENSE) for details.
 
-**Prof. Dr. Juan G. Colonna** — [github.com/juancolonna](https://github.com/juancolonna)
+**Prof. Dr. Juan G. Colonna, IComp,UFAM** — [github.com/juancolonna](https://github.com/juancolonna)
