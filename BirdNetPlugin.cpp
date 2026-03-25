@@ -49,8 +49,9 @@ BirdNetPlugin::~BirdNetPlugin() {}
 
 // ── Initialisation ───────────────────────────────────────────────────────────
 
-bool BirdNetPlugin::initialise(size_t, size_t, size_t blockSize) {
+bool BirdNetPlugin::initialise(size_t channels, size_t, size_t blockSize) {
     m_blockSize = (int)blockSize;
+    m_channels  = (int)channels;
     m_audioBuffer.clear();
     return true;
 }
@@ -69,9 +70,13 @@ BirdNetPlugin::process(const float* const* inputBuffers,
     if (m_audioBuffer.empty())
         m_startTime = timestamp;
 
-    // Accumulate mono samples into the audio buffer
-    for (int i = 0; i < m_blockSize; i++)
-        m_audioBuffer.push_back(inputBuffers[0][i]);
+    // Accumulate samples — mix to mono by averaging all channels
+    for (int i = 0; i < m_blockSize; i++) {
+        float sample = inputBuffers[0][i];
+        if (m_channels > 1)
+            sample = (sample + inputBuffers[1][i]) * 0.5f;
+        m_audioBuffer.push_back(sample);
+    }
 
     return FeatureSet();
 }

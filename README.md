@@ -92,6 +92,8 @@ VAMP_PATH=$PWD/build ./audacity-linux-3.7.7-x64-22.04.AppImage
 
 > **Tip:** The output label track can be exported via **File → Export → Export Labels** for further analysis.
 
+> **Note:** Stereo audio files are automatically mixed down to mono by averaging both channels, which may produce slightly different results compared to a native mono recording. If you are unsure, convert your audio to mono before running **Analyze → BirdNET**.
+
 ---
 
 ## Output format

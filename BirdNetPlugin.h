@@ -73,6 +73,7 @@ private:
     std::string        m_scriptPath;   // path to birdnet_run.py
     std::string        m_wavPath;      // path to temporary WAV file
     int                m_blockSize;    // VAMP block size (samples per call)
+    int                m_channels;     // number of input audio channels
     int                m_topK;         // max species per segment
     float              m_stride;       // sliding window step in seconds
     float              m_threshold;    // minimum confidence threshold

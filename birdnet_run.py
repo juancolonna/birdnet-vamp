@@ -102,15 +102,26 @@ def main():
     stride  = max(0.1, min(3.0, stride))  # ensure stride is in [0.1, 3.0]
     overlap = max(0.0, 3.0 - stride)      # overlap = window_duration - stride
 
+    lat, lon = 42.5, -76.45
+    week = 4
+
+    # 1. filtra espécies por localização e semana
+    geo_model = birdnet.load("geo", "2.4", "tf")
+    geo_result = geo_model.predict(lat, lon, week=week, min_confidence=0.03)
+    species_filter = geo_result.to_set()
+
+    species_filter=None
+    
     # Load BirdNET acoustic model v2.4 with TensorFlow backend
     model = birdnet.load("acoustic", "2.4", "tf")
 
     # Run prediction with sliding window
-    result = model.predict(
+    result = model.predict( 
         wav_path,
         default_confidence_threshold=threshold,
         top_k=top_k,
         overlap_duration_s=overlap,
+        custom_species_list=species_filter
     )
 
     data = result.to_structured_array()
