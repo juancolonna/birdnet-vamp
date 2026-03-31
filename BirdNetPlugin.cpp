@@ -31,9 +31,11 @@ using namespace Vamp;
 BirdNetPlugin::BirdNetPlugin(float inputSampleRate)
     : Plugin(inputSampleRate)
     , m_blockSize(0)
-    , m_threshold(0.5f)
+    , m_threshold(0.25f)
     , m_topK(3)
     , m_stride(3.0f)
+    , m_bandpass_fmin(0)
+    , m_bandpass_fmax(15000)
 {
     const char* home     = getenv("HOME");
     const char* vampPath = getenv("VAMP_PATH");
@@ -102,7 +104,9 @@ Plugin::FeatureSet BirdNetPlugin::getRemainingFeatures() {
         << " " << m_wavPath
         << " " << m_threshold
         << " " << m_topK
-        << " " << m_stride;
+        << " " << m_stride
+        << " " << m_bandpass_fmin
+        << " " << m_bandpass_fmax;
 
     FILE* pipe = popen(cmd.str().c_str(), "r");
     if (!pipe) return output;
@@ -226,7 +230,7 @@ Plugin::ParameterList BirdNetPlugin::getParameterDescriptors() const {
     p.unit         = "";
     p.minValue     = 0.0f;
     p.maxValue     = 1.0f;
-    p.defaultValue = 0.5f;
+    p.defaultValue = 0.25f;
     p.isQuantized  = false;
 
     ParameterDescriptor p2;
@@ -250,13 +254,37 @@ Plugin::ParameterList BirdNetPlugin::getParameterDescriptors() const {
     p3.defaultValue = 3.0f;
     p3.isQuantized  = false;
 
-    return { p, p2, p3 };
+    ParameterDescriptor p4;
+    p4.identifier   = "bandpass_fmin";
+    p4.name         = "Bandpass Filter Min Frequency";
+    p4.description  = "Minimum frequency for bandpass filter";
+    p4.unit         = "Hz";
+    p4.minValue     = 0.0f;
+    p4.maxValue     = 15000.0f;
+    p4.defaultValue = 0.0f;
+    p4.isQuantized  = true;
+    p4.quantizeStep = 1.0f;
+
+    ParameterDescriptor p5;
+    p5.identifier   = "bandpass_fmax";
+    p5.name         = "Bandpass Filter Max Frequency";
+    p5.description  = "Maximum frequency for bandpass filter";
+    p5.unit         = "Hz";
+    p5.minValue     = 0.0f;
+    p5.maxValue     = 15000.0f;
+    p5.defaultValue = 15000.0f;
+    p5.isQuantized  = true;
+    p5.quantizeStep = 1.0f;
+
+    return { p, p2, p3, p4, p5 };
 }
 
 float BirdNetPlugin::getParameter(std::string id) const {
     if (id == "threshold") return m_threshold;
     if (id == "top_k")     return (float)m_topK;
     if (id == "stride")    return m_stride;
+    if (id == "bandpass_fmin") return (float)m_bandpass_fmin;
+    if (id == "bandpass_fmax") return (float)m_bandpass_fmax;
     return 0.0f;
 }
 
@@ -264,6 +292,8 @@ void BirdNetPlugin::setParameter(std::string id, float value) {
     if (id == "threshold") m_threshold = value;
     if (id == "top_k")     m_topK = (int)value;
     if (id == "stride")    m_stride = value;
+    if (id == "bandpass_fmin") m_bandpass_fmin = (int)value;
+    if (id == "bandpass_fmax") m_bandpass_fmax = (int)value;
 }
 
 // ── VAMP metadata ────────────────────────────────────────────────────────────

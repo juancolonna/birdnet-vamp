@@ -1,24 +1,26 @@
 #!/usr/bin/env python3
 """
 birdnet_run.py — BirdNET inference script for the Audacity VAMP plugin.
-
+ 
 This script is called by the VAMP plugin (BirdNetPlugin.cpp) as a subprocess.
 It loads a BirdNET acoustic model, runs species prediction on a WAV file,
 and prints the results as a JSON array to stdout.
-
+ 
 Consecutive or overlapping detections of the same species are merged into a
 single detection spanning from the first to the last segment, with confidence
 computed as the average across all merged segments.
-
+ 
 Usage:
-    python3 birdnet_run.py <wav_path> [threshold] [top_k] [stride]
-
+    python3 birdnet_run.py <wav_path> [threshold] [top_k] [stride] [freq_min] [freq_max]
+ 
 Arguments:
     wav_path   : Path to the input WAV file.
     threshold  : Minimum confidence score to report a detection (default: 0.5).
     top_k      : Maximum number of species to consider per segment (default: 3).
     stride     : Sliding window step in seconds, in range [0.1, 3.0] (default: 3.0).
-
+    freq_min   : Lower bound for the bandpass filter in Hz (default: 0).
+    freq_max   : Upper bound for the bandpass filter in Hz (default: 15000).
+ 
 Output:
     JSON array of detections, each containing:
         - species    : Common name of the detected species.
@@ -27,12 +29,13 @@ Output:
         - time_s     : Start time of the merged detection in seconds.
         - end_s      : End time of the merged detection in seconds.
 """
-
+ 
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # suppress TensorFlow logs
+ 
 import sys
 import json
 import birdnet
-import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # suppress TensorFlow logs
 
 def merge_detections(detections):
     """
@@ -94,21 +97,23 @@ def merge_detections(detections):
 def main():
     # Parse command-line arguments
     wav_path  = sys.argv[1]
-    threshold = float(sys.argv[2]) if len(sys.argv) > 2 else 0.5
+    threshold = float(sys.argv[2]) if len(sys.argv) > 2 else 0.25
     top_k     = int(sys.argv[3])   if len(sys.argv) > 3 else 3
     stride    = float(sys.argv[4]) if len(sys.argv) > 4 else 3.0
+    freq_min  = int(sys.argv[5])   if len(sys.argv) > 5 else 0
+    freq_max  = int(sys.argv[6])   if len(sys.argv) > 6 else 15000
 
     # Clamp stride to valid range and compute overlap
     stride  = max(0.1, min(3.0, stride))  # ensure stride is in [0.1, 3.0]
     overlap = max(0.0, 3.0 - stride)      # overlap = window_duration - stride
 
-    lat, lon = 42.5, -76.45
-    week = 4
+    # lat, lon = 42.5, -76.45
+    # week = 4
 
-    # 1. filtra espécies por localização e semana
-    geo_model = birdnet.load("geo", "2.4", "tf")
-    geo_result = geo_model.predict(lat, lon, week=week, min_confidence=0.03)
-    species_filter = geo_result.to_set()
+    # # 1. filtra espécies por localização e semana
+    # geo_model = birdnet.load("geo", "2.4", "tf")
+    # geo_result = geo_model.predict(lat, lon, week=week, min_confidence=0.03)
+    # species_filter = geo_result.to_set()
 
     species_filter=None
     
@@ -121,7 +126,9 @@ def main():
         default_confidence_threshold=threshold,
         top_k=top_k,
         overlap_duration_s=overlap,
-        custom_species_list=species_filter
+        custom_species_list=species_filter,
+        bandpass_fmin=freq_min,
+        bandpass_fmax=freq_max,
     )
 
     data = result.to_structured_array()

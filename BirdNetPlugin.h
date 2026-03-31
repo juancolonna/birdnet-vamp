@@ -68,14 +68,16 @@ private:
     std::vector<Detection> parseJSON(const std::string& json) const;
 
     // ── Internal state ───────────────────────────────────────────────────────
-    std::vector<float> m_audioBuffer;  // accumulates all input samples
-    std::string        m_pythonPath;   // path to conda env Python binary
-    std::string        m_scriptPath;   // path to birdnet_run.py
-    std::string        m_wavPath;      // path to temporary WAV file
-    int                m_blockSize;    // VAMP block size (samples per call)
-    int                m_channels;     // number of input audio channels
-    int                m_topK;         // max species per segment
-    float              m_stride;       // sliding window step in seconds
-    float              m_threshold;    // minimum confidence threshold
-    Vamp::RealTime     m_startTime;    // timestamp of the first processed block
+    std::vector<float> m_audioBuffer;   // accumulates all input samples
+    std::string        m_pythonPath;    // path to conda env Python binary
+    std::string        m_scriptPath;    // path to birdnet_run.py
+    std::string        m_wavPath;       // path to temporary WAV file
+    int                m_blockSize;     // VAMP block size (samples per call)
+    int                m_channels;      // number of input audio channels
+    int                m_topK;          // max species per segment
+    float              m_stride;        // sliding window step in seconds
+    float              m_threshold;     // minimum confidence threshold
+    int                m_bandpass_fmin; // minimum frequency for bandpass filter
+    int                m_bandpass_fmax; // maximum frequency for bandpass filter
+    Vamp::RealTime     m_startTime;     // timestamp of the first processed block
 };
