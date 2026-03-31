@@ -20,6 +20,11 @@ Arguments:
     stride     : Sliding window step in seconds, in range [0.1, 3.0] (default: 3.0).
     freq_min   : Lower bound for the bandpass filter in Hz (default: 0).
     freq_max   : Upper bound for the bandpass filter in Hz (default: 15000).
+    geo_model_confidence : Minimum confidence for geographic model filtering (default: 0.03).
+    week       : Week of the year for seasonal filtering, 0 = disabled (default: 0).
+    lat        : Latitude for geographic filtering, 0.0 = disabled (default: 0.0).
+    lon        : Longitude for geographic filtering, 0.0 = disabled (default: 0.0).
+ 
  
 Output:
     JSON array of detections, each containing:
@@ -105,21 +110,26 @@ def main():
     stride    = float(sys.argv[4]) if len(sys.argv) > 4 else 3.0
     freq_min  = int(sys.argv[5])   if len(sys.argv) > 5 else 0
     freq_max  = int(sys.argv[6])   if len(sys.argv) > 6 else 15000
+    geo_model_confidence = float(sys.argv[7]) if len(sys.argv) > 7 else 0.03
+    week      = int(sys.argv[8])   if len(sys.argv) > 8 else 0
+    lat       = float(sys.argv[9]) if len(sys.argv) > 9 else 0.0
+    lon       = float(sys.argv[10]) if len(sys.argv) > 10 else 0.0
 
     # Clamp stride to valid range and compute overlap
     stride  = max(0.1, min(3.0, stride))  # ensure stride is in [0.1, 3.0]
     overlap = max(0.0, 3.0 - stride)      # overlap = window_duration - stride
 
-    # lat, lon = 42.5, -76.45
-    # week = 4
+    # Apply geographic/seasonal species filter if coordinates are provided
+    use_geo = (lat != 0.0 and lon != 0.0)
+    if use_geo:
+        geo_model      = birdnet.load("geo", "2.4", "tf")
+        geo_result     = geo_model.predict(lat, lon,
+                                           week=week if week > 0 else None,
+                                           min_confidence=geo_model_confidence)
+        species_filter = geo_result.to_set()
+    else:
+        species_filter = None
 
-    # # 1. filtra espécies por localização e semana
-    # geo_model = birdnet.load("geo", "2.4", "tf")
-    # geo_result = geo_model.predict(lat, lon, week=week, min_confidence=0.03)
-    # species_filter = geo_result.to_set()
-
-    species_filter=None
-    
     # Load BirdNET acoustic model v2.4 with TensorFlow backend
     model = birdnet.load("acoustic", "2.4", "tf")
 
