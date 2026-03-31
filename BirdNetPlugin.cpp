@@ -12,6 +12,9 @@
  *
  * Paths are resolved from the VAMP_PATH environment variable, which points to
  * the directory containing both the plugin (.so) and the inference script (.py).
+ * 
+ * Author: Prof. Dr. Juan G. Colonna <github.com/juancolonna>
+ * License: MIT
  */
 
 #include "BirdNetPlugin.h"
@@ -32,7 +35,7 @@ BirdNetPlugin::BirdNetPlugin(float inputSampleRate)
     : Plugin(inputSampleRate)
     , m_blockSize(0)
     , m_threshold(0.25f)
-    , m_topK(3)
+    , m_topK(10)
     , m_stride(3.0f)
     , m_bandpass_fmin(0)
     , m_bandpass_fmax(15000)
@@ -239,14 +242,14 @@ Plugin::ParameterList BirdNetPlugin::getParameterDescriptors() const {
     p2.description  = "Maximum number of species candidates per segment";
     p2.unit         = "";
     p2.minValue     = 1.0f;
-    p2.maxValue     = 10.0f;
-    p2.defaultValue = 3.0f;
+    p2.maxValue     = 20.0f;
+    p2.defaultValue = 10.0f;
     p2.isQuantized  = true;
     p2.quantizeStep = 1.0f;
 
     ParameterDescriptor p3;
     p3.identifier   = "stride";
-    p3.name         = "Stride (s)";
+    p3.name         = "Stride";
     p3.description  = "Sliding window step size in seconds";
     p3.unit         = "s";
     p3.minValue     = 1.0f;
@@ -256,7 +259,7 @@ Plugin::ParameterList BirdNetPlugin::getParameterDescriptors() const {
 
     ParameterDescriptor p4;
     p4.identifier   = "bandpass_fmin";
-    p4.name         = "Bandpass Filter Min Frequency";
+    p4.name         = "High-pass cutoff frequency";
     p4.description  = "Minimum frequency for bandpass filter";
     p4.unit         = "Hz";
     p4.minValue     = 0.0f;
@@ -267,7 +270,7 @@ Plugin::ParameterList BirdNetPlugin::getParameterDescriptors() const {
 
     ParameterDescriptor p5;
     p5.identifier   = "bandpass_fmax";
-    p5.name         = "Bandpass Filter Max Frequency";
+    p5.name         = "Low-pass cutoff frequency";
     p5.description  = "Maximum frequency for bandpass filter";
     p5.unit         = "Hz";
     p5.minValue     = 0.0f;

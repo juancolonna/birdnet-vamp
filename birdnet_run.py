@@ -15,8 +15,8 @@ Usage:
  
 Arguments:
     wav_path   : Path to the input WAV file.
-    threshold  : Minimum confidence score to report a detection (default: 0.5).
-    top_k      : Maximum number of species to consider per segment (default: 3).
+    threshold  : Minimum confidence score to report a detection (default: 0.25).
+    top_k      : Maximum number of species to consider per segment (default: 10).
     stride     : Sliding window step in seconds, in range [0.1, 3.0] (default: 3.0).
     freq_min   : Lower bound for the bandpass filter in Hz (default: 0).
     freq_max   : Upper bound for the bandpass filter in Hz (default: 15000).
@@ -28,6 +28,9 @@ Output:
         - confidence : Average confidence score across merged segments (4 decimal places).
         - time_s     : Start time of the merged detection in seconds.
         - end_s      : End time of the merged detection in seconds.
+
+ Author: Prof. Dr. Juan G. Colonna <github.com/juancolonna>
+ License: MIT
 """
  
 import os
@@ -98,7 +101,7 @@ def main():
     # Parse command-line arguments
     wav_path  = sys.argv[1]
     threshold = float(sys.argv[2]) if len(sys.argv) > 2 else 0.25
-    top_k     = int(sys.argv[3])   if len(sys.argv) > 3 else 3
+    top_k     = int(sys.argv[3])   if len(sys.argv) > 3 else 10
     stride    = float(sys.argv[4]) if len(sys.argv) > 4 else 3.0
     freq_min  = int(sys.argv[5])   if len(sys.argv) > 5 else 0
     freq_max  = int(sys.argv[6])   if len(sys.argv) > 6 else 15000
