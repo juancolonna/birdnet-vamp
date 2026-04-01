@@ -79,5 +79,9 @@ private:
     float              m_threshold;     // minimum confidence threshold
     int                m_bandpass_fmin; // minimum frequency for bandpass filter
     int                m_bandpass_fmax; // maximum frequency for bandpass filter
+    float              m_geo_model_confidence; // Minimum confidence for geographic model filtering (default: 0.03). It olny has effect if lat and lon parameters are set.
+    float              m_lat;           // Latitude for geographic filtering, 0.0 = disabled (default: 0.0)
+    float              m_lon;           // Longitude for geographic filtering, 0.0 = disabled (default: 0.0)
+    int                m_week;          // Week of the year for seasonal filtering, 0 = disabled (default: 0). It olny has effect if lat and lon parameters are set.
     Vamp::RealTime     m_startTime;     // timestamp of the first processed block
 };

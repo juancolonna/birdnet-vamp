@@ -39,6 +39,10 @@ BirdNetPlugin::BirdNetPlugin(float inputSampleRate)
     , m_stride(3.0f)
     , m_bandpass_fmin(0)
     , m_bandpass_fmax(15000)
+    , m_geo_model_confidence(0.03f)
+    , m_lat(0.0f)
+    , m_lon(0.0f)
+    , m_week(0)
 {
     const char* home     = getenv("HOME");
     const char* vampPath = getenv("VAMP_PATH");
@@ -109,7 +113,11 @@ Plugin::FeatureSet BirdNetPlugin::getRemainingFeatures() {
         << " " << m_topK
         << " " << m_stride
         << " " << m_bandpass_fmin
-        << " " << m_bandpass_fmax;
+        << " " << m_bandpass_fmax
+        << " " << m_geo_model_confidence
+        << " " << m_lat
+        << " " << m_lon
+        << " " << m_week;
 
     FILE* pipe = popen(cmd.str().c_str(), "r");
     if (!pipe) return output;
@@ -279,7 +287,48 @@ Plugin::ParameterList BirdNetPlugin::getParameterDescriptors() const {
     p5.isQuantized  = true;
     p5.quantizeStep = 1.0f;
 
-    return { p, p2, p3, p4, p5 };
+    ParameterDescriptor p6;
+    p6.identifier   = "geo_model_confidence";
+    p6.name         = "Geographic Model Confidence";
+    p6.description  = "Minimum confidence for geographic model filtering. It olny has effect if lat and lon parameters are set.";
+    p6.unit         = "";
+    p6.minValue     = 0.0f;
+    p6.maxValue     = 1.0f;
+    p6.defaultValue = 0.03f;
+    p6.isQuantized  = false;
+
+    ParameterDescriptor p7;
+    p7.identifier   = "lat";
+    p7.name         = "Latitude";
+    p7.description  = "Latitude for geographic filtering, 0.0 = disabled";
+    p7.unit         = "°";
+    p7.minValue     = -90.0f;
+    p7.maxValue     = 90.0f;
+    p7.defaultValue = 0.0f;
+    p7.isQuantized  = false;
+
+    ParameterDescriptor p8;
+    p8.identifier   = "lon";
+    p8.name         = "Longitude";
+    p8.description  = "Longitude for geographic filtering, 0.0 = disabled";
+    p8.unit         = "°";
+    p8.minValue     = -180.0f;
+    p8.maxValue     = 180.0f;
+    p8.defaultValue = 0.0f;
+    p8.isQuantized  = false;
+
+    ParameterDescriptor p9;
+    p9.identifier   = "week";
+    p9.name         = "Week of the Year";
+    p9.description  = "Week of the year for seasonal filtering, 0 = disabled. It olny have effect if lat and lon parameters are set.";
+    p9.unit         = "";
+    p9.minValue     = 0.0f;
+    p9.maxValue     = 52.0f;
+    p9.defaultValue = 0.0f;
+    p9.isQuantized  = true;
+    p9.quantizeStep = 1.0f;
+
+    return { p, p2, p3, p4, p5, p6, p7, p8, p9 };
 }
 
 float BirdNetPlugin::getParameter(std::string id) const {
@@ -288,6 +337,10 @@ float BirdNetPlugin::getParameter(std::string id) const {
     if (id == "stride")    return m_stride;
     if (id == "bandpass_fmin") return (float)m_bandpass_fmin;
     if (id == "bandpass_fmax") return (float)m_bandpass_fmax;
+    if (id == "geo_model_confidence") return m_geo_model_confidence;
+    if (id == "lat") return m_lat;
+    if (id == "lon") return m_lon; 
+    if (id == "week") return (float)m_week;
     return 0.0f;
 }
 
@@ -297,6 +350,10 @@ void BirdNetPlugin::setParameter(std::string id, float value) {
     if (id == "stride")    m_stride = value;
     if (id == "bandpass_fmin") m_bandpass_fmin = (int)value;
     if (id == "bandpass_fmax") m_bandpass_fmax = (int)value;
+    if (id == "geo_model_confidence") m_geo_model_confidence = value;
+    if (id == "lat") m_lat = value;
+    if (id == "lon") m_lon = value;
+    if (id == "week") m_week = (int)value;
 }
 
 // ── VAMP metadata ────────────────────────────────────────────────────────────

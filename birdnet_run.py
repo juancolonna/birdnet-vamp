@@ -11,7 +11,7 @@ single detection spanning from the first to the last segment, with confidence
 computed as the average across all merged segments.
  
 Usage:
-    python3 birdnet_run.py <wav_path> [threshold] [top_k] [stride] [freq_min] [freq_max]
+    python3 birdnet_run.py <wav_path> [threshold] [top_k] [stride] [freq_min] [freq_max] [geo_model_confidence] [lat] [lon] [week]
  
 Arguments:
     wav_path   : Path to the input WAV file.
@@ -20,10 +20,10 @@ Arguments:
     stride     : Sliding window step in seconds, in range [0.1, 3.0] (default: 3.0).
     freq_min   : Lower bound for the bandpass filter in Hz (default: 0).
     freq_max   : Upper bound for the bandpass filter in Hz (default: 15000).
-    geo_model_confidence : Minimum confidence for geographic model filtering (default: 0.03).
-    week       : Week of the year for seasonal filtering, 0 = disabled (default: 0).
+    geo_model_confidence : Minimum confidence for geographic model filtering (default: 0.03). It olny has effect if lat and lon parameters are set.
     lat        : Latitude for geographic filtering, 0.0 = disabled (default: 0.0).
     lon        : Longitude for geographic filtering, 0.0 = disabled (default: 0.0).
+    week       : Week of the year for seasonal filtering, 0 = disabled (default: 0). It olny has effect if lat and lon parameters are set.
  
  
 Output:
@@ -111,9 +111,9 @@ def main():
     freq_min  = int(sys.argv[5])   if len(sys.argv) > 5 else 0
     freq_max  = int(sys.argv[6])   if len(sys.argv) > 6 else 15000
     geo_model_confidence = float(sys.argv[7]) if len(sys.argv) > 7 else 0.03
-    week      = int(sys.argv[8])   if len(sys.argv) > 8 else 0
-    lat       = float(sys.argv[9]) if len(sys.argv) > 9 else 0.0
-    lon       = float(sys.argv[10]) if len(sys.argv) > 10 else 0.0
+    lat       = float(sys.argv[8]) if len(sys.argv) > 8 else 0.0
+    lon       = float(sys.argv[9]) if len(sys.argv) > 9 else 0.0
+    week      = int(sys.argv[10])   if len(sys.argv) > 10 else 0
 
     # Clamp stride to valid range and compute overlap
     stride  = max(0.1, min(3.0, stride))  # ensure stride is in [0.1, 3.0]
