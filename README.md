@@ -19,12 +19,19 @@ Detections appear as labeled regions directly on the Audacity track, with the sp
 
 - Automatic bird species detection using BirdNET v2.4 (TensorFlow backend)
 - Labels appear directly on the Audacity track with species name and confidence score
-- Three configurable parameters via Audacity's plugin interface:
-  - **Confidence Threshold** — minimum confidence score to report a detection (default: 0.5)
-  - **Top K Species** — maximum number of species candidates per segment (default: 3)
+- Nine configurable parameters via Audacity's plugin interface:
+  - **Confidence Threshold** — minimum confidence score to report a detection (default: 0.25)
+  - **Top K Species** — maximum number of species candidates per segment (default: 10)
   - **Stride (s)** — sliding window step size in seconds (default: 3.0)
+  - **High-pass cutoff frequency** — minimum frequency for bandpass filter in Hz (default: 0)
+  - **Low-pass cutoff frequency** — maximum frequency for bandpass filter in Hz (default: 15000)
+  - **Latitude** — latitude for geographic species filtering; 0.0 = disabled (default: 0.0)
+  - **Longitude** — longitude for geographic species filtering; 0.0 = disabled (default: 0.0)
+  - **Week of the Year** — week number (1–52) for seasonal filtering; 0 = disabled (default: 0)
+  - **Geographic Model Confidence** — minimum confidence for the geographic model filter (default: 0.03)
 - Works on full recordings or selected segments
 - Consecutive and overlapping detections of the same species are merged automatically
+- Optional geographic and seasonal filtering using BirdNET's built-in geo model
 
 ---
 
@@ -83,16 +90,15 @@ VAMP_PATH=$PWD/build ./audacity-linux-3.7.7-x64-22.04.AppImage
 1. Open an audio file in Audacity (**File → Open**)
 2. Optionally select a specific region of the track to analyze
 3. Go to **Analyze → BirdNET**
-4. Adjust parameters if desired:
-   - **Confidence Threshold**: raise to reduce false positives (e.g., 0.7), lower to increase recall (e.g., 0.3)
-   - **Top K Species**: number of candidate species evaluated per 3-second segment
-   - **Stride (s)**: step size of the sliding window — smaller values produce more detections but increase processing time
+4. Adjust parameters if desired
 5. Click **OK** and wait for the analysis to complete
 6. Detections appear as labeled regions on a new label track
 
 > **Tip:** The output label track can be exported via **File → Export → Export Labels** for further analysis.
 
 > **Note:** Stereo audio files are automatically mixed down to mono by averaging both channels, which may produce slightly different results compared to a native mono recording. If you are unsure, convert your audio to mono before running **Analyze → BirdNET**.
+
+⚠️ **Important note:** The plugin processes only a single audio track at a time. Multitrack projects are not supported — running the plugin with multiple tracks selected may produce incorrect or incomplete results.
 
 ---
 
@@ -153,6 +159,16 @@ birdnet-vamp-plugin/
 5. Consecutive or overlapping detections of the same species are merged into single labels
 6. The plugin reads the JSON, creates VAMP features, and displays them as labeled regions in Audacity
 7. The temporary WAV file is deleted after processing
+
+---
+
+## Geographic and Seasonal Filtering
+
+When Latitude 'and' Longitude are set to non-zero values, the plugin activates BirdNET's geographic model to filter the species list before running acoustic inference. This restricts detections to species that are realistically expected at the given location, significantly reducing false positives. Optionally, setting Week of the Year (1–52) further narrows the filter to species expected at that location during that season. For example, a migratory species present only in summer will be excluded outside its expected seasonal window.
+
+The Geographic Model Confidence parameter controls how broadly the geo model selects candidate species. Lower values (e.g., 0.01) include more species in the filter; higher values (e.g., 0.1) apply a stricter regional filter.
+
+> **Note:** Geographic filtering has no effect if both Latitude and Longitude are left at 0.0.
 
 ---
 
