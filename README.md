@@ -98,7 +98,7 @@ VAMP_PATH=$PWD/build ./audacity-linux-3.7.7-x64-22.04.AppImage
 
 > **Note:** Stereo audio files are automatically mixed down to mono by averaging both channels, which may produce slightly different results compared to a native mono recording. If you are unsure, convert your audio to mono before running **Analyze → BirdNET**.
 
-⚠️ **Important note:** The plugin processes only a single audio track at a time. Multitrack projects are not supported — running the plugin with multiple tracks selected may produce incorrect or incomplete results.
+⚠️ **Important note:** The plugin processes only a single audio track at a time. Multitrack projects are not supported, running the plugin with multiple tracks, even if only one is selected, will produce incorrect or incomplete results. This is an Audacity bug processing when processing VAMP plugins.
 
 ---
 
