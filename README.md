@@ -9,8 +9,6 @@ A VAMP plugin for Audacity that runs [BirdNET v2.4](https://github.com/birdnet-t
 
 Detections appear as labeled regions directly on the Audacity track, with the species name and confidence score. Consecutive or overlapping detections of the same species are automatically merged into a single label.
 
-## Screenshot
-
 ![BirdNET VAMP Plugin in Audacity](assets/screenshot.png)
 
 ---
