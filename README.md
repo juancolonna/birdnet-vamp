@@ -11,6 +11,8 @@ Detections appear as labeled regions directly on the Audacity track, with the sp
 
 ![BirdNET VAMP Plugin in Audacity](assets/screenshot.png)
 
+> ⚠️ **Important:** This repository includes a compiled fork of Audacity 3.7.7 with a VAMP plugin bug fix for proper multi-track support (bug fixed by me). To work correctly, run it with **Audacity-VampFix-3.7.7-x86_64.AppImage**.
+
 ---
 
 ## Features
@@ -49,6 +51,8 @@ Detections appear as labeled regions directly on the Audacity track, with the sp
 git clone https://github.com/juancolonna/birdnet-vamp-plugin.git
 cd birdnet-vamp
 ```
+
+> **Note:** This repository needs Git Large File Storage (LFS).
 
 ### 2. Run the installation script
 
