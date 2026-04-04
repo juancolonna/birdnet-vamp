@@ -9,7 +9,7 @@ A VAMP plugin for [Audacity](https://www.audacityteam.org/) that runs [BirdNET v
 
 Detections appear as labeled regions directly on the Audacity track, with the species name and confidence score. Consecutive or overlapping detections of the same species are automatically merged into a single label.
 
-![BirdNET VAMP Plugin in Audacity](assets/screenshot.png)
+![BirdNET VAMP Plugin in Audacity](assets/screenshot_1.png)
 
 > ⚠️ **Important:** This repository includes a compiled fork of Audacity 3.7.7 with a VAMP plugin bug fix for proper multi-track support (bug fixed by me). To work correctly, run it with **Audacity-VampFix-3.7.7-x86_64.AppImage**.
 
@@ -82,10 +82,10 @@ After installation, open **Audacity-BirdNet** from your application menu. The sh
 ### From the terminal
 
 ```bash
-VAMP_PATH=$PWD/build ./audacity-linux-3.7.7-x64-22.04.AppImage
+VAMP_PATH=$PWD/build ./Audacity-VampFix-3.7.7-x86_64.AppImage
 ```
 
-> Run this command from inside the cloned repository directory.
+> Run this command from inside the `birdnet-vamp` directory.
 
 ## Usage
 
