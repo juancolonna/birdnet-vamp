@@ -2,12 +2,13 @@
 # install.sh — Installation script for the BirdNET VAMP plugin.
 #
 # This script performs the following steps:
-#   1. Verifies the Audacity-VampFix-3.7.7-x86_64.AppImage integrity via SHA256 checksum.
-#   2. Installs system build dependencies (cmake, g++, vamp-plugin-sdk).
-#   3. Creates a Conda environment (birdnet-plugin) and installs the birdnet package.
-#   4. Compiles the VAMP plugin into the build/ directory.
-#   5. Copies birdnet_run.py into build/ alongside the plugin.
-#   6. Creates a desktop shortcut named Audacity-BirdNet that launches the
+#   1. Downloads the Audacity 3.7.7 AppImage if not already present.
+#   2. Verifies the AppImage integrity via SHA256 checksum.
+#   3. Installs system build dependencies (cmake, g++, vamp-plugin-sdk).
+#   4. Creates a Conda environment (birdnet-plugin) and installs the birdnet package.
+#   5. Compiles the VAMP plugin into the build/ directory.
+#   6. Copies birdnet_run.py into build/ alongside the plugin.
+#   7. Creates a desktop shortcut named Audacity-BirdNet that launches the
 #      bundled AppImage with VAMP_PATH pointing to build/.
 #
 # The AppImage is self-contained and does not interfere with any existing
@@ -25,14 +26,23 @@ set -e
 
 REPO_DIR="$(realpath "$(dirname "$0")")"
 VAMP_DIR="$REPO_DIR/build"
-APPIMAGE_NAME="Audacity-VampFix-3.7.7-x86_64.AppImage"
+APPIMAGE_NAME="audacity-linux-3.7.7-x64-22.04.AppImage"
+APPIMAGE_URL="https://github.com/audacity/audacity/releases/download/Audacity-3.7.7/$APPIMAGE_NAME"
 APPIMAGE_PATH="$REPO_DIR/$APPIMAGE_NAME"
-APPIMAGE_SHA256="b9dfee578ac4bbb6333ef9564c46a8f1ff348b1760abf4be0c0672d67c6eafd3"
+APPIMAGE_SHA256="45c4445fb6670cc5fe40d31c7cea979724d2605bca53b554c32520acbf901ef0"
 CONDA_ENV="birdnet-plugin"
 CONDA_PYTHON="$HOME/miniconda3/envs/$CONDA_ENV/bin/python3"
 
 # ── Create required directories ───────────────────────────────────────────────
 mkdir -p "$HOME/.local/share/applications"
+
+# ── Download Audacity AppImage if not present ─────────────────────────────────
+if [ ! -f "$APPIMAGE_PATH" ]; then
+    echo "==> Downloading Audacity AppImage..."
+    wget -q --show-progress -O "$APPIMAGE_PATH" "$APPIMAGE_URL"
+else
+    echo "==> Audacity AppImage already exists, skipping download."
+fi
 
 # ── Verify AppImage integrity (SHA256) ────────────────────────────────────────
 echo "==> Verifying AppImage integrity..."
