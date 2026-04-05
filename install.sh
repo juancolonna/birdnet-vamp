@@ -2,16 +2,11 @@
 # install.sh — Installation script for the BirdNET VAMP plugin.
 #
 # This script performs the following steps:
-#   1. Verifies the Audacity-VampFix-3.7.7-x86_64.AppImage integrity via SHA256 checksum.
-#   2. Installs system build dependencies (cmake, g++, vamp-plugin-sdk).
-#   3. Creates a Conda environment (birdnet-plugin) and installs the birdnet package.
-#   4. Compiles the VAMP plugin into the build/ directory.
-#   5. Copies birdnet_run.py into build/ alongside the plugin.
-#   6. Creates a desktop shortcut named Audacity-BirdNet that launches the
-#      bundled AppImage with VAMP_PATH pointing to build/.
-#
-# The AppImage is self-contained and does not interfere with any existing
-# Audacity installation on the system.
+#   1. Installs system build dependencies (cmake, g++, vamp-plugin-sdk).
+#   2. Creates a Conda environment (birdnet-plugin) and installs the birdnet package.
+#   3. Compiles the VAMP plugin into the build/ directory.
+#   4. Copies birdnet_run.py into build/ alongside the plugin.
+#   5. Copies compiled plugin and .py files to ~/vamp.
 #
 # Requirements:
 #   - Miniconda or Anaconda installed at ~/miniconda3
@@ -19,34 +14,14 @@
 #   - Internet connection for downloading the AppImage and Python packages
 #
 # Usage:
-#   bash install.sh
+#   bash install.sh or ./install.sh
 
 set -e
 
 REPO_DIR="$(realpath "$(dirname "$0")")"
 VAMP_DIR="$REPO_DIR/build"
-APPIMAGE_NAME="Audacity-VampFix-3.7.7-x86_64.AppImage"
-APPIMAGE_PATH="$REPO_DIR/$APPIMAGE_NAME"
-APPIMAGE_SHA256="b9dfee578ac4bbb6333ef9564c46a8f1ff348b1760abf4be0c0672d67c6eafd3"
 CONDA_ENV="birdnet-plugin"
 CONDA_PYTHON="$HOME/miniconda3/envs/$CONDA_ENV/bin/python3"
-
-# ── Create required directories ───────────────────────────────────────────────
-mkdir -p "$HOME/.local/share/applications"
-
-# ── Verify AppImage integrity (SHA256) ────────────────────────────────────────
-echo "==> Verifying AppImage integrity..."
-ACTUAL_SHA256=$(sha256sum "$APPIMAGE_PATH" | awk '{print $1}')
-if [ "$ACTUAL_SHA256" != "$APPIMAGE_SHA256" ]; then
-    echo "ERROR: AppImage integrity check failed!"
-    echo "  Expected: $APPIMAGE_SHA256"
-    echo "  Got:      $ACTUAL_SHA256"
-    echo "  The file may be corrupted or tampered with. Deleting it."
-    rm -f "$APPIMAGE_PATH"
-    exit 1
-fi
-chmod +x "$APPIMAGE_PATH"
-echo "    Integrity check passed."
 
 # ── Install system build dependencies ────────────────────────────────────────
 echo ""
@@ -79,29 +54,19 @@ cd "$REPO_DIR"
 # ── Copy inference script to build/ ──────────────────────────────────────────
 cp "$REPO_DIR/birdnet_run.py" "$VAMP_DIR/"
 
-# ── Create desktop shortcut ───────────────────────────────────────────────────
+# ── Copy plugin + Python files to ~/vamp ─────────────────────────────────────
 echo ""
-echo "==> Creating Audacity-BirdNet desktop shortcut..."
-cat > "$HOME/.local/share/applications/audacity-birdnet.desktop" << DESKTOP
-[Desktop Entry]
-Name=Audacity-BirdNet
-Comment=Audacity Audio Editor with BirdNET Plugin
-Exec=env VAMP_PATH=$VAMP_DIR $APPIMAGE_PATH %F
-Icon=audacity
-Terminal=false
-Type=Application
-Categories=Audio;AudioVideo;
-DESKTOP
-update-desktop-database "$HOME/.local/share/applications/" 2>/dev/null || true
+echo "==> Copying plugin files to $HOME/vamp..."
+mkdir -p "$HOME/vamp"
+cp "$VAMP_DIR"/birdnet-vamp.so "$HOME/vamp/"
+cp "$VAMP_DIR"/birdnet_run.py "$HOME/vamp/"
 
 echo ""
 echo "Installation complete!"
 echo "Python interpreter: $CONDA_PYTHON"
 echo ""
-echo "Launch Audacity-BirdNet from the application menu or run:"
-echo "  VAMP_PATH=$PWD/build ./$APPIMAGE_NAME"
+echo "To launch Audacity-BirdNet execute:"
+echo "  ./audacity.sh"
 echo ""
-echo "Inside Audacity:"
-echo "  1. Open an audio file"
-echo "  2. Go to Analyze -> BirdNET"
-echo "  3. Detections will appear as labeled regions on the track"
+echo "To launch Sonic-Visualizer-BirdNet execute:"
+echo "  ./sonic-visualizer.sh"

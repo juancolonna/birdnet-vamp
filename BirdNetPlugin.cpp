@@ -145,7 +145,7 @@ Plugin::FeatureSet BirdNetPlugin::getRemainingFeatures() {
     }
 
     // Remove temporary WAV file
-    //std::remove(m_wavPath.c_str());
+    std::remove(m_wavPath.c_str());
 
     return output;
 }
