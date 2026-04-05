@@ -17,9 +17,6 @@ Detections appear as labeled regions directly on the label track (Audacity) or a
 ### How it looks in Sonic-Visualizer
 ![BirdNET VAMP Plugin in Sonic-Visualizer](assets/screenshot_sonic.png)
 
-
----
-
 ## Features
 
 - Automatic bird species detection using BirdNET v2.4 (TensorFlow backend)
@@ -38,15 +35,11 @@ Detections appear as labeled regions directly on the label track (Audacity) or a
 - Consecutive and overlapping detections of the same species are merged automatically
 - Optional geographic and seasonal filtering using BirdNET's built-in geo model
 
----
-
 ## Requirements
 
 - Ubuntu 22.04 with internet connection 
 - [Miniconda](https://docs.conda.io/en/latest/miniconda.html) installed at `~/miniconda3`
 - `cmake`, `g++`, and `vamp-plugin-sdk` (installed automatically by `install.sh` script)
-
----
 
 ## Installation
 
@@ -73,7 +66,7 @@ The script will automatically:
 - Copy `birdnet_run.py` into `build/` alongside the plugin
 - Creates the ~/vamp directory in your Linux HOME folder, then copies the files `birdnet_run.py` and `birdnet-vamp.so` into it.
 
-> **Note:** The installation does not modify or remove any existing Audacity installation on your system. The bundled AppImage runs independently.
+> **Note:** The installation does not modify or remove any existing Audacity or Sonic-Visualizer installation on your system. The bundled AppImage runs independently.
 
 ### 3. Configuration and execution scripts
 
@@ -87,8 +80,6 @@ or
 
 - Verifies the integrity of the *.AppImage files via SHA256 checksum.
 - Creates a desktop shortcut named **Audacity-BirdNet** or **Sonic-BirdNet** in your application menu
-
----
 
 ## Running
 
@@ -108,8 +99,6 @@ VAMP_PATH=$PWD/build ./SonicVisualiser-5.2.1-x86_64.AppImage
 
 > Run this command from inside the `birdnet-vamp` directory.
 
----
-
 ## Usage on Audacity
 
 1. Open an audio file in Audacity-BirdNet (**File → Open**)
@@ -121,8 +110,6 @@ VAMP_PATH=$PWD/build ./SonicVisualiser-5.2.1-x86_64.AppImage
 
 > **Note:** Stereo audio files are automatically mixed down to mono by averaging both channels when you execute the BirdNet plugin, which may produce slightly different results compared to a native mono recording. If you are unsure, convert your audio to mono before running **Analyze → BirdNET**.
 
----
-
 ## Usage on Sonic-Visualizer
 
 1. Open an audio file in Sonic-BirdNet (**File → Open**)
@@ -131,8 +118,6 @@ VAMP_PATH=$PWD/build ./SonicVisualiser-5.2.1-x86_64.AppImage
 4. Adjust parameters if desired
 5. Click **OK** and wait for the analysis to complete
 6. Detections appear as labeled regions on a new label layer
-
----
 
 ## Annotation format
 
@@ -150,9 +135,7 @@ House Finch (61%)
 
 Where `XX%` is the average confidence score across all merged segments.
 
-> **Tip:** The output label layer can be exported to CSV format via **File → Export Annotation Layer** for further analysis.
-
----
+> **Tip:** The output labels can be exported in CSV format via **File → Export Other → Export Labels** in Audacity, or via **File → Export Annotation Layer** in Sonic Visualiser, for further analysis.
 
 ## Project structure
 
@@ -172,8 +155,6 @@ birdnet-vamp/
     └── birdnet_run.py                     # Copy of the inference script
 ```
 
----
-
 ## How it works
 
 1. When **BirdNET** is triggered, the VAMP plugin accumulates all audio samples into a buffer
@@ -184,8 +165,6 @@ birdnet-vamp/
 6. The plugin reads the JSON, creates VAMP features, and displays them as labeled regions in Audacity or Sonic-Visualizer
 7. The temporary WAV file is deleted after processing
 
----
-
 ## Geographic and Seasonal Filtering
 
 When Latitude 'and' Longitude are set to non-zero values, the plugin activates BirdNET's geographic model to filter the species list before running acoustic inference. This restricts detections to species that are realistically expected at the given location, significantly reducing false positives. Optionally, setting Week of the Year (1–52) further narrows the filter to species expected at that location during that season. For example, a migratory species present only in summer will be excluded outside its expected seasonal window.
@@ -193,8 +172,6 @@ When Latitude 'and' Longitude are set to non-zero values, the plugin activates B
 The Geographic Model Confidence parameter controls how broadly the geo model selects candidate species. Lower values (e.g., 0.01) include more species in the filter; higher values (e.g., 0.1) apply a stricter regional filter.
 
 > **Note:** Geographic filtering has no effect if any, Latitude or Longitude, are left at 0.0.
-
----
 
 ## Troubleshooting
 
@@ -211,8 +188,6 @@ The Geographic Model Confidence parameter controls how broadly the geo model sel
 - This is expected — BirdNET inference with TensorFlow can take 10–30 seconds depending on audio length
 - Click **Wait** and the analysis will complete normally
 
----
-
 ## Citation
 
 If you use this plugin in your research, please cite:
@@ -225,8 +200,6 @@ If you use this plugin in your research, please cite:
   url     = {https://github.com/juancolonna/birdnet-vamp-plugin}
 }
 ```
-
----
 
 ## License and Author
 
