@@ -4,7 +4,7 @@
  * This plugin accumulates audio samples during processing, writes them to a
  * temporary WAV file, and invokes the BirdNET inference script (birdnet_run.py)
  * via a Python subprocess. Detections are returned as labeled features with
- * timestamps, visible as label tracks in Audacity.
+ * timestamps, visible as label tracks in Audacity or Sonic-Visualiser.
  *
  * Author: Prof. Dr. Juan G. Colonna <github.com/juancolonna>
  * License: MIT

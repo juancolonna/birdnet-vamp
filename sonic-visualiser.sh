@@ -1,13 +1,13 @@
 #!/bin/bash
-# sonic-visualizer.sh — Configuration and execution script for the BirdNET VAMP plugin on Sonic Visualizer.
+# sonic-visualiser.sh — Configuration and execution script for the BirdNET VAMP plugin on Sonic Visualiser.
 #
 # This script performs the following steps:
-#   1. Verifies the Sonic-Visualizer AppImage integrity via SHA256 checksum.
-#   2. Creates a desktop shortcut named Sonic-Visualizer-BirdNet that launches the
+#   1. Verifies the Sonic-Visualiser AppImage integrity via SHA256 checksum.
+#   2. Creates a desktop shortcut named Sonic-Visualiser-BirdNet that launches the
 #      bundled AppImage with VAMP_PATH pointing to $HOME/vamp/.
 #
-# The Sonic-Visualizer AppImage is self-contained and does not interfere with 
-# any existing Sonic-Visualizer installation on the system.
+# The Sonic-Visualiser AppImage is self-contained and does not interfere with 
+# any existing Sonic-Visualiser installation on the system.
 #
 # Requirements:
 #   - Run from the repository root directory (where this script is located) after executing ./install.sh.
@@ -15,7 +15,7 @@
 #   - Ubuntu 22.04 or compatible Debian-based system
 #
 # Usage:
-#   bash sonic-visualizer.sh or ./sonic-visualizer.sh
+#   bash sonic-visualiser.sh or ./sonic-visualiser.sh
 
 set -e
 
@@ -43,11 +43,11 @@ echo "    Integrity check passed."
 
 # ── Create desktop shortcut ───────────────────────────────────────────────────
 echo ""
-echo "==> Creating Sonic-Visualizer-BirdNet desktop shortcut..."
-cat > "$HOME/.local/share/applications/sonic-visualizer-birdnet.desktop" << DESKTOP
+echo "==> Creating Sonic-Visualiser-BirdNet desktop shortcut..."
+cat > "$HOME/.local/share/applications/sonic-visualiser-birdnet.desktop" << DESKTOP
 [Desktop Entry]
 Name=Sonic-BirdNet
-Comment=Sonic Visualizer with BirdNET Plugin
+Comment=Sonic Visualiser with BirdNET Plugin
 Exec=env VAMP_PATH=$HOME/vamp $APPIMAGE_PATH %F
 Icon=sonic-birdnet
 Terminal=false
@@ -61,17 +61,17 @@ update-desktop-database "$HOME/.local/share/applications/" 2>/dev/null || true
 echo ""
 echo "Configuration complete!"
 echo ""
-echo "Launch Sonic-Visualizer-BirdNet from the application menu or run:"
+echo "Launch Sonic-Visualiser-BirdNet from the application menu or run:"
 echo "  VAMP_PATH=$PWD/build ./$APPIMAGE_NAME"
 echo "or"
 echo "  VAMP_PATH=$HOME/vamp ./$APPIMAGE_NAME"
 echo ""
-echo "Inside Sonic Visualizer:"
+echo "Inside Sonic Visualiser:"
 echo "  1. Open an audio file and select the track"
 echo "  2. Go to Transform -> Analysis by Plugin Name -> BirdNET"
 echo "  3. Detections will appear as labeled regions on the track"
 echo ""
-echo "Would you like to launch Sonic-Visualizer-BirdNet now? (y/n): "
+echo "Would you like to launch Sonic-Visualiser-BirdNet now? (y/n): "
 read -r launch
 if [[ $launch == "y" ]]; then
     VAMP_PATH=$PWD/build $APPIMAGE_PATH

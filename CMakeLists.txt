@@ -1,7 +1,7 @@
 # CMakeLists.txt — Build configuration for the BirdNET VAMP plugin.
 #
 # Builds a shared library (.so) that implements the VAMP plugin interface,
-# allowing Audacity and other VAMP hosts to load and run BirdNET inference.
+# allowing Audacity and Sonic-Visualiser VAMP hosts to load and run BirdNET inference.
 #
 # Requirements:
 #   - CMake >= 3.16

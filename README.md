@@ -1,21 +1,21 @@
-# 🎶 🐦‍⬛ BirdNet VAMP Plugin for Audacity and Sonic-Visualizer
+# 🎶 🐦‍⬛ BirdNet VAMP Plugin for Audacity and Sonic-Visualiser
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![Audacity 3.7.7](https://img.shields.io/badge/Audacity-3.7.7-2C7ED6.svg)](https://www.audacityteam.org/)
 [![C++](https://img.shields.io/badge/C%2B%2B-supported-00599C.svg)](https://isocpp.org/)
 
-A VAMP plugin for [Audacity](https://www.audacityteam.org/) and/or [Sonic-Visualizer](https://sonicvisualiser.org/) that runs [BirdNET v2.4](https://github.com/birdnet-team/birdnet) inference to automatically detect and label bird vocalizations in audio recordings.
+A VAMP plugin for [Audacity](https://www.audacityteam.org/) and/or [Sonic-Visualiser](https://sonicvisualiser.org/) that runs [BirdNET v2.4](https://github.com/birdnet-team/birdnet) inference to automatically detect and label bird vocalizations in audio recordings.
 
-Detections appear as labeled regions directly on the label track (Audacity) or as an annotation layer (Sonic-Visualizer), with the species name and confidence score. Consecutive or overlapping detections of the same species are automatically merged into a single label.
+Detections appear as labeled regions directly on the label track (Audacity) or as an annotation layer (Sonic-Visualiser), with the species name and confidence score. Consecutive or overlapping detections of the same species are automatically merged into a single label.
 
 ### How it looks in Audacity
 ![BirdNET VAMP Plugin in Audacity](assets/screenshot_audacity.png)
 
 > ⚠️ **Important:** This repository includes a compiled fork of Audacity 3.7.7 with a VAMP plugin bug fix for proper multi-track support (bug fixed by me). To work correctly, run it with **Audacity-VampFix-3.7.7-x86_64.AppImage**.
 
-### How it looks in Sonic-Visualizer
-![BirdNET VAMP Plugin in Sonic-Visualizer](assets/screenshot_sonic.png)
+### How it looks in Sonic-Visualiser
+![BirdNET VAMP Plugin in Sonic-Visualiser](assets/screenshot_sonic.png)
 
 ## Features
 
@@ -66,7 +66,7 @@ The script will automatically:
 - Copy `birdnet_run.py` into `build/` alongside the plugin
 - Creates the ~/vamp directory in your Linux HOME folder, then copies the files `birdnet_run.py` and `birdnet-vamp.so` into it.
 
-> **Note:** The installation does not modify or remove any existing Audacity or Sonic-Visualizer installation on your system. The bundled AppImage runs independently.
+> **Note:** The installation does not modify or remove any existing Audacity or Sonic-Visualiser installation on your system. The bundled AppImage runs independently.
 
 ### 3. Configuration and execution scripts
 
@@ -75,7 +75,7 @@ The script will automatically:
 ```
 or
 ```bash
-./sonic-visualizer.sh
+./sonic-visualiser.sh
 ```
 
 - Verifies the integrity of the *.AppImage files via SHA256 checksum.
@@ -110,7 +110,7 @@ VAMP_PATH=$PWD/build ./SonicVisualiser-5.2.1-x86_64.AppImage
 
 > **Note:** Stereo audio files are automatically mixed down to mono by averaging both channels when you execute the BirdNet plugin, which may produce slightly different results compared to a native mono recording. If you are unsure, convert your audio to mono before running **Analyze → BirdNET**.
 
-## Usage on Sonic-Visualizer
+## Usage on Sonic-Visualiser
 
 1. Open an audio file in Sonic-BirdNet (**File → Open**)
 2. Optionally select a specific region of the track to analyze
@@ -147,9 +147,9 @@ birdnet-vamp/
 ├── CMakeLists.txt                         # Build configuration
 ├── install.sh                             # Installation script
 ├── audacity.sh                            # Configuration script
-├── sonic-visualizer.sh                    # Configuration script
+├── sonic-visualiser.sh                    # Configuration script
 ├── Audacity-VampFix-3.7.7-x86_64.AppImage # Bundled Audacity AppImage
-├── SonicVisualiser-5.2.1-x86_64.AppImage  # Bundled Sonic-Visualizer AppImage
+├── SonicVisualiser-5.2.1-x86_64.AppImage  # Bundled Sonic-Visualiser AppImage
 └── build/                                 # Compiled plugin (created by install.sh)
     ├── birdnet-vamp.so                    # Compiled VAMP plugin
     └── birdnet_run.py                     # Copy of the inference script
@@ -162,7 +162,7 @@ birdnet-vamp/
 3. It invokes `birdnet_run.py` as a subprocess using the Python interpreter from the `birdnet-plugin` Conda environment
 4. The Python script runs BirdNET v2.4 inference and returns detections as a JSON array via stdout
 5. Consecutive or overlapping detections of the same species are merged into single labels
-6. The plugin reads the JSON, creates VAMP features, and displays them as labeled regions in Audacity or Sonic-Visualizer
+6. The plugin reads the JSON, creates VAMP features, and displays them as labeled regions in Audacity or Sonic-Visualiser
 7. The temporary WAV file is deleted after processing
 
 ## Geographic and Seasonal Filtering
@@ -195,7 +195,7 @@ If you use this plugin in your research, please cite:
 ```bibtex
 @software{colonna2026birdnet_vamp,
   author  = {Colonna, Juan G.},
-  title   = {BirdNET VAMP Plugin for Audacity and Sonic-Visualizer},
+  title   = {BirdNET VAMP Plugin for Audacity and Sonic-Visualiser},
   year    = {2026},
   url     = {https://github.com/juancolonna/birdnet-vamp-plugin}
 }

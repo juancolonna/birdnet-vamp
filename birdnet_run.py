@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-birdnet_run.py — BirdNET inference script for the Audacity VAMP plugin.
+birdnet_run.py — BirdNET inference script for the Audacity or Sonic-Visualiser VAMP plugin.
  
 This script is called by the VAMP plugin (BirdNetPlugin.cpp) as a subprocess.
 It loads a BirdNET acoustic model, runs species prediction on a WAV file,
