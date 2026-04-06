@@ -68,8 +68,6 @@ echo ""
 echo "Configuration complete!"
 echo ""
 echo "Launch Audacity-BirdNet from the application menu or run:"
-echo "  VAMP_PATH=$PWD/build ./$APPIMAGE_NAME"
-echo "or"
 echo "  VAMP_PATH=$HOME/vamp ./$APPIMAGE_NAME"
 echo ""
 echo "Inside Audacity:"
@@ -80,5 +78,6 @@ echo ""
 echo "Would you like to launch Audacity-BirdNet now? (y/n): "
 read -r launch
 if [[ $launch == "y" ]]; then
-    VAMP_PATH=$PWD/build $APPIMAGE_PATH > /dev/null 2>&1 &
+    VAMP_PATH=$HOME/vamp $APPIMAGE_PATH
+    # VAMP_PATH=$PWD/build $APPIMAGE_PATH > /dev/null 2>&1 &
 fi

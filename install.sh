@@ -26,8 +26,8 @@ CONDA_PYTHON="$HOME/miniconda3/envs/$CONDA_ENV/bin/python3"
 # ── Install system build dependencies ────────────────────────────────────────
 echo ""
 echo "==> Installing system dependencies..."
-sudo apt-get update -qq
-sudo apt-get install -y cmake g++ vamp-plugin-sdk
+sudo apt update -qq
+sudo apt install -y cmake g++ vamp-plugin-sdk libfuse2t64 libopengl0 libjack-jackd2-0
 
 # ── Create Conda environment and install birdnet ──────────────────────────────
 echo ""
