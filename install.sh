@@ -53,6 +53,9 @@ cd "$REPO_DIR"
 
 # ── Copy inference script to build/ ──────────────────────────────────────────
 cp "$REPO_DIR/birdnet_run.py" "$VAMP_DIR/"
+cp "$REPO_DIR/birdnet-vamp.cat" "$VAMP_DIR/"
+cp "$REPO_DIR/birdnet-vamp.n3" "$VAMP_DIR/"
+cp "$REPO_DIR/birdnet-vamp_COPYING.txt" "$VAMP_DIR/"
 
 # ── Copy plugin + Python files to ~/vamp ─────────────────────────────────────
 echo ""
@@ -60,6 +63,9 @@ echo "==> Copying plugin files to $HOME/vamp..."
 mkdir -p "$HOME/vamp"
 cp "$VAMP_DIR"/birdnet-vamp.so "$HOME/vamp/"
 cp "$VAMP_DIR"/birdnet_run.py "$HOME/vamp/"
+cp "$REPO_DIR/birdnet-vamp.cat" "$HOME/vamp/"
+cp "$REPO_DIR/birdnet-vamp.n3" "$HOME/vamp/"
+cp "$REPO_DIR/birdnet-vamp_COPYING.txt" "$HOME/vamp/"
 
 echo ""
 echo "Installation complete!"

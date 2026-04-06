@@ -361,8 +361,8 @@ void BirdNetPlugin::setParameter(std::string id, float value) {
 std::string BirdNetPlugin::getIdentifier()    const { return "birdnet-vamp"; }
 std::string BirdNetPlugin::getName()          const { return "BirdNET"; }
 std::string BirdNetPlugin::getDescription()   const { return "Bird species detection using BirdNET v2.4"; }
-std::string BirdNetPlugin::getMaker()         const { return "Prof. Dr. Juan G. Colonna <github.com/juancolonna>"; }
-std::string BirdNetPlugin::getCopyright()     const { return "MIT"; }
+std::string BirdNetPlugin::getMaker()         const { return "Bioacoustics"; }
+std::string BirdNetPlugin::getCopyright()     const { return "MIT License — Prof. Dr. Juan G. Colonna <github.com/juancolonna>"; }
 int         BirdNetPlugin::getPluginVersion() const { return 1; }
 
 Plugin::InputDomain BirdNetPlugin::getInputDomain() const {
@@ -374,7 +374,7 @@ Plugin::OutputList BirdNetPlugin::getOutputDescriptors() const {
     d.identifier       = "detections";
     d.name             = "BirdNET Detections";
     d.description      = "Detected species with confidence score and timestamp";
-    d.unit             = "";
+    d.unit             = "Species (confidence %)";
     d.hasFixedBinCount = true;
     d.binCount         = 1;
     d.sampleType       = OutputDescriptor::VariableSampleRate;

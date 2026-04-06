@@ -74,5 +74,5 @@ echo ""
 echo "Would you like to launch Sonic-Visualiser-BirdNet now? (y/n): "
 read -r launch
 if [[ $launch == "y" ]]; then
-    VAMP_PATH=$PWD/build $APPIMAGE_PATH
+    VAMP_PATH=$PWD/build $APPIMAGE_PATH > /dev/null 2>&1 &
 fi

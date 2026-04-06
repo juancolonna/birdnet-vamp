@@ -56,6 +56,12 @@ Categories=Audio;AudioVideo;
 DESKTOP
 update-desktop-database "$HOME/.local/share/applications/" 2>/dev/null || true
 
+# ── Limpar cache de plugins do Audacity ───────────────────────────────────────
+echo ""
+echo "==> Clearing Audacity plugin cache..."
+rm -f ~/.config/audacity/pluginregistry.cfg
+echo "    Cache cleared. Audacity will rescan plugins on next launch."
+
 # ── Execution ───────────────────────────────────────────────────
 
 echo ""
@@ -74,5 +80,5 @@ echo ""
 echo "Would you like to launch Audacity-BirdNet now? (y/n): "
 read -r launch
 if [[ $launch == "y" ]]; then
-    VAMP_PATH=$PWD/build $APPIMAGE_PATH
+    VAMP_PATH=$PWD/build $APPIMAGE_PATH > /dev/null 2>&1 &
 fi

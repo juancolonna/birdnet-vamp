@@ -30,7 +30,7 @@
 
 plugbase:library a vamp:PluginLibrary ;
     vamp:identifier       "birdnet-vamp" ;
-    dc:title              "BirdNET VAMP Plugin" ;
+    dc:title              "Bioacoustics" ;
     dc:description        "Bird species detection using BirdNET v2.4 (TensorFlow backend)" ;
     foaf:maker            :library_maker ;
     foaf:page             <https://github.com/juancolonna/birdnet-vamp-plugin> ;
