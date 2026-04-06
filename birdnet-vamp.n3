@@ -1,0 +1,197 @@
+@prefix rdfs:     <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
+@prefix vamp:     <http://purl.org/ontology/vamp/> .
+@prefix plugbase: <http://vamp-plugins.org/rdf/plugins/birdnet-vamp#> .
+@prefix owl:      <http://www.w3.org/2002/07/owl#> .
+@prefix dc:       <http://purl.org/dc/elements/1.1/> .
+@prefix af:       <http://purl.org/ontology/af/> .
+@prefix foaf:     <http://xmlns.com/foaf/0.1/> .
+@prefix doap:     <http://usefulinc.com/ns/doap#> .
+@prefix cc:       <http://web.resource.org/cc/> .
+@prefix :         <#> .
+
+
+## Properties of this document
+
+<> a vamp:PluginDescription ;
+    foaf:maker        <http://vamp-plugins.org/rdf/template-generator> ;
+    foaf:primaryTopic <http://vamp-plugins.org/rdf/plugins/birdnet-vamp> .
+
+
+## Maker of the plugin library
+
+:library_maker
+    foaf:name  "Prof. Dr. Juan G. Colonna" ;
+    foaf:page  <https://github.com/juancolonna>
+    .
+
+
+## Properties of the plugin library
+
+plugbase:library a vamp:PluginLibrary ;
+    vamp:identifier       "birdnet-vamp" ;
+    dc:title              "BirdNET VAMP Plugin" ;
+    dc:description        "Bird species detection using BirdNET v2.4 (TensorFlow backend)" ;
+    foaf:maker            :library_maker ;
+    foaf:page             <https://github.com/juancolonna/birdnet-vamp-plugin> ;
+    doap:download-page    <https://github.com/juancolonna/birdnet-vamp-plugin/releases> ;
+    vamp:available_plugin plugbase:birdnet-vamp ;
+    vamp:has_source       true ;
+    vamp:has_binary       "linux64"
+    .
+
+
+## Properties of the BirdNET plugin
+
+plugbase:birdnet-vamp a vamp:Plugin ;
+    dc:title              "BirdNET" ;
+    vamp:name             "BirdNET" ;
+    dc:description        """Detects and labels bird species vocalizations in audio recordings using BirdNET v2.4. Consecutive or overlapping detections of the same species are merged into a single labeled region with averaged confidence score.""" ;
+    foaf:maker            :library_maker ;
+    dc:rights             """MIT License. Copyright (c) 2026 Juan G. Colonna""" ;
+    cc:license            <https://opensource.org/licenses/MIT> ;
+    vamp:identifier       "birdnet-vamp" ;
+    vamp:vamp_API_version vamp:api_version_2 ;
+    owl:versionInfo       "1" ;
+    vamp:input_domain     vamp:TimeDomain ;
+
+    vamp:parameter   plugbase:birdnet-vamp_param_threshold ;
+    vamp:parameter   plugbase:birdnet-vamp_param_top_k ;
+    vamp:parameter   plugbase:birdnet-vamp_param_stride ;
+    vamp:parameter   plugbase:birdnet-vamp_param_bandpass_fmin ;
+    vamp:parameter   plugbase:birdnet-vamp_param_bandpass_fmax ;
+    vamp:parameter   plugbase:birdnet-vamp_param_geo_model_confidence ;
+    vamp:parameter   plugbase:birdnet-vamp_param_lat ;
+    vamp:parameter   plugbase:birdnet-vamp_param_lon ;
+    vamp:parameter   plugbase:birdnet-vamp_param_week ;
+
+    vamp:output      plugbase:birdnet-vamp_output_detections ;
+    .
+
+## Parameters
+
+plugbase:birdnet-vamp_param_threshold a vamp:Parameter ;
+    vamp:identifier     "threshold" ;
+    dc:title            "Confidence Threshold" ;
+    dc:description      "Minimum confidence score to report a detection" ;
+    dc:format           "" ;
+    vamp:min_value       0 ;
+    vamp:max_value       1 ;
+    vamp:unit           "" ;
+    vamp:default_value   0.25 ;
+    vamp:value_names     () ;
+    .
+
+plugbase:birdnet-vamp_param_top_k a vamp:QuantizedParameter ;
+    vamp:identifier     "top_k" ;
+    dc:title            "Top K Species" ;
+    dc:description      "Maximum number of species candidates per segment" ;
+    dc:format           "" ;
+    vamp:min_value       1 ;
+    vamp:max_value       20 ;
+    vamp:unit           "" ;
+    vamp:quantize_step   1 ;
+    vamp:default_value   10 ;
+    vamp:value_names     () ;
+    .
+
+plugbase:birdnet-vamp_param_stride a vamp:Parameter ;
+    vamp:identifier     "stride" ;
+    dc:title            "Stride" ;
+    dc:description      "Sliding window step size in seconds" ;
+    dc:format           "s" ;
+    vamp:min_value       1 ;
+    vamp:max_value       3 ;
+    vamp:unit           "s" ;
+    vamp:default_value   3 ;
+    vamp:value_names     () ;
+    .
+
+plugbase:birdnet-vamp_param_bandpass_fmin a vamp:QuantizedParameter ;
+    vamp:identifier     "bandpass_fmin" ;
+    dc:title            "High-pass cutoff frequency" ;
+    dc:description      "Minimum frequency for bandpass filter" ;
+    dc:format           "Hz" ;
+    vamp:min_value       0 ;
+    vamp:max_value       15000 ;
+    vamp:unit           "Hz" ;
+    vamp:quantize_step   1 ;
+    vamp:default_value   0 ;
+    vamp:value_names     () ;
+    .
+
+plugbase:birdnet-vamp_param_bandpass_fmax a vamp:QuantizedParameter ;
+    vamp:identifier     "bandpass_fmax" ;
+    dc:title            "Low-pass cutoff frequency" ;
+    dc:description      "Maximum frequency for bandpass filter" ;
+    dc:format           "Hz" ;
+    vamp:min_value       0 ;
+    vamp:max_value       15000 ;
+    vamp:unit           "Hz" ;
+    vamp:quantize_step   1 ;
+    vamp:default_value   15000 ;
+    vamp:value_names     () ;
+    .
+
+plugbase:birdnet-vamp_param_geo_model_confidence a vamp:Parameter ;
+    vamp:identifier     "geo_model_confidence" ;
+    dc:title            "Geographic Model Confidence" ;
+    dc:description      "Minimum confidence for geographic model filtering. Only has effect if lat and lon are set." ;
+    dc:format           "" ;
+    vamp:min_value       0 ;
+    vamp:max_value       1 ;
+    vamp:unit           "" ;
+    vamp:default_value   0.03 ;
+    vamp:value_names     () ;
+    .
+
+plugbase:birdnet-vamp_param_lat a vamp:Parameter ;
+    vamp:identifier     "lat" ;
+    dc:title            "Latitude" ;
+    dc:description      "Latitude for geographic filtering, 0.0 = disabled" ;
+    dc:format           "°" ;
+    vamp:min_value       -90 ;
+    vamp:max_value       90 ;
+    vamp:unit           "°" ;
+    vamp:default_value   0 ;
+    vamp:value_names     () ;
+    .
+
+plugbase:birdnet-vamp_param_lon a vamp:Parameter ;
+    vamp:identifier     "lon" ;
+    dc:title            "Longitude" ;
+    dc:description      "Longitude for geographic filtering, 0.0 = disabled" ;
+    dc:format           "°" ;
+    vamp:min_value       -180 ;
+    vamp:max_value       180 ;
+    vamp:unit           "°" ;
+    vamp:default_value   0 ;
+    vamp:value_names     () ;
+    .
+
+plugbase:birdnet-vamp_param_week a vamp:QuantizedParameter ;
+    vamp:identifier     "week" ;
+    dc:title            "Week of the Year" ;
+    dc:description      "Week of the year for seasonal filtering, 0 = disabled. Only has effect if lat and lon are set." ;
+    dc:format           "" ;
+    vamp:min_value       0 ;
+    vamp:max_value       52 ;
+    vamp:unit           "" ;
+    vamp:quantize_step   1 ;
+    vamp:default_value   0 ;
+    vamp:value_names     () ;
+    .
+
+
+## Output
+
+plugbase:birdnet-vamp_output_detections a vamp:SparseOutput ;
+    vamp:identifier       "detections" ;
+    dc:title              "BirdNET Detections" ;
+    dc:description        """Detected bird species with confidence score and timestamp. Each detection spans the duration of the merged segment and is labeled with the species common name and average confidence percentage.""" ;
+    vamp:fixed_bin_count  "true" ;
+    vamp:unit             "" ;
+    vamp:bin_count        1 ;
+    vamp:sample_type      vamp:VariableSampleRate ;
+    af:feature            af:DetectedNote ;
+    .
