@@ -151,22 +151,18 @@ def main():
         species    = row['species_name']
         scientific = species.split("_")[0]
         common     = species.split("_")[1]
-        conf       = float(row['confidence'])
+        conf       = int(100.0 * round(row['confidence'], 4)) # Converts confidence from 0..1 to an integer percentage
         
         detections.append({
             "species":    common,
             "scientific": scientific,
-            "confidence": round(conf, 4),
+            "confidence": conf,
             "time_s":     float(row['start_time']),
             "end_s":      float(row['end_time']),
         })
 
     # Merge consecutive/overlapping detections of the same species
     detections = merge_detections(detections)
-
-    # Converts confidence from 0..1 to an integer percentage
-    for det in detections:
-        det["confidence"] = int(round(det["confidence"] * 100))
 
     # Output results as JSON to stdout (read by the VAMP plugin via popen)
     print(json.dumps(detections), flush=True)
