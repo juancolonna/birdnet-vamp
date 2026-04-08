@@ -136,10 +136,7 @@ Plugin::FeatureSet BirdNetPlugin::getRemainingFeatures() {
         f.timestamp    = RealTime::fromSeconds(d.time_s) + m_startTime;
         f.hasDuration  = true;
         f.duration     = RealTime::fromSeconds(d.end_s - d.time_s);
-        f.label        = d.species +
-                         " (" +
-                         std::to_string((int)std::round(d.confidence * 100)) +
-                         "%)";
+        f.label = d.species + " (" + std::to_string((int)d.confidence) + "%)";
         f.values.push_back(d.confidence);
         output[0].push_back(f);
     }
@@ -213,7 +210,7 @@ BirdNetPlugin::parseJSON(const std::string& json) const
         };
 
         Detection d;
-        d.species    = str("species");
+        d.species    = str("scientific");
         d.confidence = num("confidence");
         d.time_s     = num("time_s");
         d.end_s      = num("end_s");

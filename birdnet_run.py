@@ -164,6 +164,10 @@ def main():
     # Merge consecutive/overlapping detections of the same species
     detections = merge_detections(detections)
 
+    # Converts confidence from 0..1 to an integer percentage
+    for det in detections:
+        det["confidence"] = int(round(det["confidence"] * 100))
+
     # Output results as JSON to stdout (read by the VAMP plugin via popen)
     print(json.dumps(detections), flush=True)
 
