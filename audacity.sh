@@ -11,7 +11,6 @@
 #
 # Requirements:
 #   - Run from the repository root directory (where this script is located) after executing ./install.sh.
-#   - Miniconda or Anaconda installed at ~/miniconda3
 #   - Ubuntu 22.04 or compatible Debian-based system
 #
 # Usage:
@@ -23,6 +22,7 @@ REPO_DIR="$(realpath "$(dirname "$0")")"
 APPIMAGE_NAME="Audacity-VampFix-3.7.7-x86_64.AppImage"
 APPIMAGE_PATH="$REPO_DIR/$APPIMAGE_NAME"
 APPIMAGE_SHA256="b9dfee578ac4bbb6333ef9564c46a8f1ff348b1760abf4be0c0672d67c6eafd3"
+ICON_PATH="$REPO_DIR/assets/audacity-icon-256.png"
 
 # ── Create required directories ───────────────────────────────────────────────
 mkdir -p "$HOME/.local/share/applications"
@@ -46,29 +46,28 @@ echo ""
 echo "==> Creating Audacity-BirdNet desktop shortcut..."
 cat > "$HOME/.local/share/applications/audacity-birdnet.desktop" << DESKTOP
 [Desktop Entry]
-Name=Audacity-BirdNet
+Name=Audacity-BirdNET
 Comment=Audacity Audio Editor with BirdNET Plugin
-Exec=env VAMP_PATH=$HOME/vamp $APPIMAGE_PATH %F
-Icon=audacity
+Exec=bash -c 'VAMP_PATH=$HOME/vamp PATH=$HOME/.local/bin:$PATH "$APPIMAGE_PATH" %f'
+Icon=$ICON_PATH
 Terminal=false
 Type=Application
 Categories=Audio;AudioVideo;
 DESKTOP
 update-desktop-database "$HOME/.local/share/applications/" 2>/dev/null || true
 
-# ── Limpar cache de plugins do Audacity ───────────────────────────────────────
+# ── Clear Audacity plugin cache ───────────────────────────────────────────────
 echo ""
 echo "==> Clearing Audacity plugin cache..."
 rm -f ~/.config/audacity/pluginregistry.cfg
 echo "    Cache cleared. Audacity will rescan plugins on next launch."
 
-# ── Execution ───────────────────────────────────────────────────
-
+# ── Execution ─────────────────────────────────────────────────────────────────
 echo ""
 echo "Configuration complete!"
 echo ""
 echo "Launch Audacity-BirdNet from the application menu or run:"
-echo "  VAMP_PATH=$PWD/build ./$APPIMAGE_NAME"
+echo "  VAMP_PATH=$HOME/vamp PATH=$HOME/.local/bin:\$PATH ./$APPIMAGE_NAME"
 echo ""
 echo "Inside Audacity:"
 echo "  1. Open an audio file and select the track"
@@ -78,6 +77,6 @@ echo ""
 echo "Would you like to launch Audacity-BirdNet now? (y/n): "
 read -r launch
 if [[ $launch == "y" ]]; then
+    export PATH="$HOME/.local/bin:$PATH"
     VAMP_PATH=$HOME/vamp $APPIMAGE_PATH
-    # VAMP_PATH=$PWD/build $APPIMAGE_PATH > /dev/null 2>&1 &
 fi

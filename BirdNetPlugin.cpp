@@ -7,12 +7,18 @@
  *                               via popen(), parses the JSON output, and returns
  *                               labeled VAMP features with timestamps.
  *
- * The Python subprocess (birdnet_run.py) runs the BirdNET v2.4 acoustic model
- * using the TensorFlow backend inside a dedicated Conda environment.
+ * The Python subprocess (birdnet_run.py) is executed via `uv run`, which
+ * automatically resolves and reuses the pre-installed environment declared
+ * as inline metadata (PEP 723) at the top of the script. Dependencies are
+ * pre-installed during setup (install.sh), so no lazy resolution occurs
+ * at analysis time.
  *
  * Paths are resolved from the VAMP_PATH environment variable, which points to
  * the directory containing both the plugin (.so) and the inference script (.py).
- * 
+ * The ~/.local/bin path (where uv lives) is included in PATH by the .desktop
+ * shortcut created by audacity.sh / sonic-visualiser.sh, so `uv run` is always
+ * found regardless of how the application was launched.
+ *
  * Author: Prof. Dr. Juan G. Colonna <github.com/juancolonna>
  * License: MIT
  */
@@ -44,14 +50,12 @@ BirdNetPlugin::BirdNetPlugin(float inputSampleRate)
     , m_lon(0.0f)
     , m_week(0)
 {
-    const char* home     = getenv("HOME");
     const char* vampPath = getenv("VAMP_PATH");
 
     std::string pluginDir = std::string(vampPath ? vampPath : "");
 
-    m_pythonPath = std::string(home ? home : "") + "/miniconda3/envs/birdnet-plugin/bin/python3";
     m_scriptPath = pluginDir + "/birdnet_run.py";
-    m_wavPath    = pluginDir + "/birdnet_analise.wav";
+    m_wavPath    = pluginDir + "/birdnet_analysis.wav";
 }
 
 BirdNetPlugin::~BirdNetPlugin() {}
@@ -105,9 +109,9 @@ Plugin::FeatureSet BirdNetPlugin::getRemainingFeatures() {
              (int)m_inputSampleRate);
     m_audioBuffer.clear();
 
-    // Build and run the Python subprocess command
+    // Build and run the Python subprocess via uv run
     std::ostringstream cmd;
-    cmd << m_pythonPath << " " << m_scriptPath
+    cmd << "uv run " << m_scriptPath
         << " " << m_wavPath
         << " " << m_threshold
         << " " << m_topK
@@ -287,7 +291,7 @@ Plugin::ParameterList BirdNetPlugin::getParameterDescriptors() const {
     ParameterDescriptor p6;
     p6.identifier   = "geo_model_confidence";
     p6.name         = "Geographic Model Confidence";
-    p6.description  = "Minimum confidence for geographic model filtering. It olny has effect if lat and lon parameters are set.";
+    p6.description  = "Minimum confidence for geographic model filtering. It only has effect if lat and lon parameters are set.";
     p6.unit         = "";
     p6.minValue     = 0.0f;
     p6.maxValue     = 1.0f;
@@ -317,7 +321,7 @@ Plugin::ParameterList BirdNetPlugin::getParameterDescriptors() const {
     ParameterDescriptor p9;
     p9.identifier   = "week";
     p9.name         = "Week of the Year";
-    p9.description  = "Week of the year for seasonal filtering, 0 = disabled. It olny have effect if lat and lon parameters are set.";
+    p9.description  = "Week of the year for seasonal filtering, 0 = disabled. It only has effect if lat and lon parameters are set.";
     p9.unit         = "";
     p9.minValue     = 0.0f;
     p9.maxValue     = 52.0f;
@@ -336,7 +340,7 @@ float BirdNetPlugin::getParameter(std::string id) const {
     if (id == "bandpass_fmax") return (float)m_bandpass_fmax;
     if (id == "geo_model_confidence") return m_geo_model_confidence;
     if (id == "lat") return m_lat;
-    if (id == "lon") return m_lon; 
+    if (id == "lon") return m_lon;
     if (id == "week") return (float)m_week;
     return 0.0f;
 }
