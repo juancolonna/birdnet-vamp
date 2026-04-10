@@ -26,7 +26,7 @@ VAMP_DIR="$REPO_DIR/build"
 echo ""
 echo "==> Installing system dependencies..."
 sudo apt update -qq
-sudo apt install -y cmake g++ vamp-plugin-sdk libfuse2t64 libopengl0 libjack-jackd2-0 libsndfile1 ffmpeg
+sudo apt install -y cmake g++ vamp-plugin-sdk curl libfuse2t64 libopengl0 libjack-jackd2-0 libsndfile1 ffmpeg
 
 # ── Install uv ────────────────────────────────────────────────────────────────
 echo ""

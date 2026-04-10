@@ -40,6 +40,7 @@ Detections appear as labeled regions directly on the label track (Audacity) or a
 - Ubuntu 22.04 with an internet connection 
 - [uv](https://github.com/astral-sh/uv) (an extremely fast Python package and project manager, written in Rust)
 - `cmake`, `g++`, and `vamp-plugin-sdk` (installed automatically by `install.sh` script)
+- `curl`
 
 ## Installation
 
