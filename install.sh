@@ -3,15 +3,16 @@
 #
 # This script performs the following steps:
 #   1. Installs system build dependencies (cmake, g++, vamp-plugin-sdk).
-#   2. Creates a Conda environment (birdnet-plugin) and installs the birdnet package.
-#   3. Compiles the VAMP plugin into the build/ directory.
-#   4. Copies birdnet_run.py into build/ alongside the plugin.
-#   5. Copies compiled plugin and .py files to ~/vamp.
+#   2. Installs uv (if not already installed) — a fast Python package manager.
+#   3. Pre-installs birdnet_run.py dependencies via uv sync --script, so the
+#      plugin runs instantly inside Audacity without any lazy resolution.
+#   4. Compiles the VAMP plugin into the build/ directory.
+#   5. Copies birdnet_run.py into build/ alongside the plugin.
+#   6. Copies compiled plugin and .py files to ~/vamp.
 #
 # Requirements:
-#   - Miniconda or Anaconda installed at ~/miniconda3
 #   - Ubuntu 22.04 or compatible Debian-based system
-#   - Internet connection for downloading the AppImage and Python packages
+#   - Internet connection for downloading packages
 #
 # Usage:
 #   bash install.sh or ./install.sh
@@ -20,27 +21,31 @@ set -e
 
 REPO_DIR="$(realpath "$(dirname "$0")")"
 VAMP_DIR="$REPO_DIR/build"
-CONDA_ENV="birdnet-plugin"
-CONDA_PYTHON="$HOME/miniconda3/envs/$CONDA_ENV/bin/python3"
 
 # ── Install system build dependencies ────────────────────────────────────────
 echo ""
 echo "==> Installing system dependencies..."
 sudo apt update -qq
-sudo apt install -y cmake g++ vamp-plugin-sdk libfuse2t64 libopengl0 libjack-jackd2-0
+sudo apt install -y cmake g++ vamp-plugin-sdk curl libfuse2t64 libopengl0 libjack-jackd2-0 libsndfile1 ffmpeg
 
-# ── Create Conda environment and install birdnet ──────────────────────────────
+# ── Install uv ────────────────────────────────────────────────────────────────
 echo ""
-echo "==> Setting up Conda environment '$CONDA_ENV'..."
-source "$HOME/miniconda3/etc/profile.d/conda.sh"
+echo "==> Installing uv..."
+curl -LsSf https://astral.sh/uv/install.sh | sh
+export PATH="$HOME/.local/bin:$PATH"
 
-if conda env list | grep -q "^$CONDA_ENV "; then
-    echo "    Environment '$CONDA_ENV' already exists, skipping creation."
-else
-    conda create -y -n "$CONDA_ENV" python=3.12
+if ! command -v uv &>/dev/null; then
+    echo "ERROR: uv installation failed or not found in PATH."
+    echo "  Try reopening your terminal and running ./install.sh again."
+    exit 1
 fi
+echo "    uv $(uv --version) ready."
 
-conda run -n "$CONDA_ENV" pip install birdnet --quiet
+# ── Pre-install script dependencies ──────────────────────────────────────────
+echo ""
+echo "==> Pre-installing birdnet_run.py dependencies (this may take a few minutes)..."
+uv sync --script "$REPO_DIR/birdnet_run.py"
+echo "    Dependencies installed and cached successfully."
 
 # ── Compile the VAMP plugin ───────────────────────────────────────────────────
 echo ""
@@ -52,24 +57,26 @@ make -j$(nproc)
 cd "$REPO_DIR"
 
 # ── Copy inference script to build/ ──────────────────────────────────────────
-cp "$REPO_DIR/birdnet_run.py" "$VAMP_DIR/"
-cp "$REPO_DIR/birdnet-vamp.cat" "$VAMP_DIR/"
-cp "$REPO_DIR/birdnet-vamp.n3" "$VAMP_DIR/"
+cp "$REPO_DIR/birdnet_run.py"           "$VAMP_DIR/"
+cp "$REPO_DIR/birdnet-vamp.cat"         "$VAMP_DIR/"
+cp "$REPO_DIR/birdnet-vamp.n3"          "$VAMP_DIR/"
 cp "$REPO_DIR/birdnet-vamp_COPYING.txt" "$VAMP_DIR/"
 
 # ── Copy plugin + Python files to ~/vamp ─────────────────────────────────────
 echo ""
 echo "==> Copying plugin files to $HOME/vamp..."
 mkdir -p "$HOME/vamp"
-cp "$VAMP_DIR"/birdnet-vamp.so "$HOME/vamp/"
-cp "$VAMP_DIR"/birdnet_run.py "$HOME/vamp/"
-cp "$REPO_DIR/birdnet-vamp.cat" "$HOME/vamp/"
-cp "$REPO_DIR/birdnet-vamp.n3" "$HOME/vamp/"
+cp "$VAMP_DIR/birdnet-vamp.so"          "$HOME/vamp/"
+cp "$VAMP_DIR/birdnet_run.py"           "$HOME/vamp/"
+cp "$REPO_DIR/birdnet-vamp.cat"         "$HOME/vamp/"
+cp "$REPO_DIR/birdnet-vamp.n3"          "$HOME/vamp/"
 cp "$REPO_DIR/birdnet-vamp_COPYING.txt" "$HOME/vamp/"
 
 echo ""
 echo "Installation complete!"
-echo "Python interpreter: $CONDA_PYTHON"
+echo ""
+echo "To test the inference script directly:"
+echo "  uv run birdnet_run.py audio.wav"
 echo ""
 echo "To launch Audacity-BirdNet execute:"
 echo "  ./audacity.sh"

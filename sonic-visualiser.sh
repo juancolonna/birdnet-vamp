@@ -11,7 +11,6 @@
 #
 # Requirements:
 #   - Run from the repository root directory (where this script is located) after executing ./install.sh.
-#   - Miniconda or Anaconda installed at ~/miniconda3
 #   - Ubuntu 22.04 or compatible Debian-based system
 #
 # Usage:
@@ -23,6 +22,7 @@ REPO_DIR="$(realpath "$(dirname "$0")")"
 APPIMAGE_NAME="SonicVisualiser-5.2.1-x86_64.AppImage"
 APPIMAGE_PATH="$REPO_DIR/$APPIMAGE_NAME"
 APPIMAGE_SHA256="e31e7b970db7a9d6e5943c050c0a06c193d2c3fd4a82b6283aa08a9dc798599c"
+ICON_PATH="$REPO_DIR/assets/sonic-icon-256.png"
 
 # ── Create required directories ───────────────────────────────────────────────
 mkdir -p "$HOME/.local/share/applications"
@@ -46,23 +46,22 @@ echo ""
 echo "==> Creating Sonic-Visualiser-BirdNet desktop shortcut..."
 cat > "$HOME/.local/share/applications/sonic-visualiser-birdnet.desktop" << DESKTOP
 [Desktop Entry]
-Name=Sonic-BirdNet
+Name=Sonic-BirdNET
 Comment=Sonic Visualiser with BirdNET Plugin
-Exec=env VAMP_PATH=$HOME/vamp $APPIMAGE_PATH %F
-Icon=sonic-birdnet
+Exec=bash -c 'VAMP_PATH=$HOME/vamp PATH=$HOME/.local/bin:$PATH "$APPIMAGE_PATH" %f'
+Icon=$ICON_PATH
 Terminal=false
 Type=Application
 Categories=Audio;AudioVideo;
 DESKTOP
 update-desktop-database "$HOME/.local/share/applications/" 2>/dev/null || true
 
-# ── Execution ───────────────────────────────────────────────────
-
+# ── Execution ─────────────────────────────────────────────────────────────────
 echo ""
 echo "Configuration complete!"
 echo ""
 echo "Launch Sonic-Visualiser-BirdNet from the application menu or run:"
-echo "  VAMP_PATH=$PWD/build ./$APPIMAGE_NAME"
+echo "  VAMP_PATH=$HOME/vamp PATH=$HOME/.local/bin:\$PATH ./$APPIMAGE_NAME"
 echo ""
 echo "Inside Sonic Visualiser:"
 echo "  1. Open an audio file and select the track"
@@ -72,6 +71,6 @@ echo ""
 echo "Would you like to launch Sonic-Visualiser-BirdNet now? (y/n): "
 read -r launch
 if [[ $launch == "y" ]]; then
+    export PATH="$HOME/.local/bin:$PATH"
     VAMP_PATH=$HOME/vamp $APPIMAGE_PATH
-    # VAMP_PATH=$PWD/build $APPIMAGE_PATH > /dev/null 2>&1 &
 fi

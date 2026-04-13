@@ -58,7 +58,7 @@ private:
 
     // Holds a single BirdNET detection parsed from JSON output
     struct Detection {
-        std::string species;     // common name
+        std::string species;     // scientific name
         float       confidence;  // average confidence score in %
         float       time_s;      // merged segment start time in seconds
         float       end_s;       // merged segment end time in seconds
