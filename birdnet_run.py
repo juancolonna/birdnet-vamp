@@ -111,7 +111,7 @@ def main():
     freq_min  = int(sys.argv[5])   if len(sys.argv) > 5 else 0
     freq_max  = int(sys.argv[6])   if len(sys.argv) > 6 else 15000
     geo_model_confidence = float(sys.argv[7]) if len(sys.argv) > 7 else 0.03
-    lat       = float(sys.argv[8]) if len(sys.argv) > 8 else 0.0
+    lat       = float(sys.argv[8]) if len(sys.argv) > 8 else 90.0
     lon       = float(sys.argv[9]) if len(sys.argv) > 9 else 0.0
     week      = int(sys.argv[10])   if len(sys.argv) > 10 else 0
 
@@ -120,7 +120,7 @@ def main():
     overlap = max(0.0, 3.0 - stride)      # overlap = window_duration - stride
 
     # Apply geographic/seasonal species filter if coordinates are provided
-    use_geo = (lat != 0.0 and lon != 0.0)
+    use_geo = (lat != 90.0 and lat != -90.0)
     if use_geo:
         geo_model      = birdnet.load("geo", "2.4", "tf")
         geo_result     = geo_model.predict(lat, lon,

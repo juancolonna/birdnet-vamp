@@ -40,7 +40,7 @@ BirdNetPlugin::BirdNetPlugin(float inputSampleRate)
     , m_bandpass_fmin(0)
     , m_bandpass_fmax(15000)
     , m_geo_model_confidence(0.03f)
-    , m_lat(0.0f)
+    , m_lat(90.0f)
     , m_lon(0.0f)
     , m_week(0)
 {
@@ -301,7 +301,7 @@ Plugin::ParameterList BirdNetPlugin::getParameterDescriptors() const {
     p7.unit         = "°";
     p7.minValue     = -90.0f;
     p7.maxValue     = 90.0f;
-    p7.defaultValue = 0.0f;
+    p7.defaultValue = 90.0f;
     p7.isQuantized  = false;
 
     ParameterDescriptor p8;
