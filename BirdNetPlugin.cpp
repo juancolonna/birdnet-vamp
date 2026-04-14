@@ -43,8 +43,8 @@ BirdNetPlugin::BirdNetPlugin(float inputSampleRate)
     , m_threshold(0.25f)
     , m_topK(10)
     , m_stride(3.0f)
-    , m_bandpass_fmin(0)
-    , m_bandpass_fmax(15000)
+    , m_fmin(0)
+    , m_fmax(15000)
     , m_geo_model_confidence(0.03f)
     , m_lat(90.0f)
     , m_lon(0.0f)
@@ -116,8 +116,8 @@ Plugin::FeatureSet BirdNetPlugin::getRemainingFeatures() {
         << " " << m_threshold
         << " " << m_topK
         << " " << m_stride
-        << " " << m_bandpass_fmin
-        << " " << m_bandpass_fmax
+        << " " << m_fmin
+        << " " << m_fmax
         << " " << m_geo_model_confidence
         << " " << m_lat
         << " " << m_lon
@@ -137,9 +137,9 @@ Plugin::FeatureSet BirdNetPlugin::getRemainingFeatures() {
     for (auto& d : parseJSON(json)) {
         Feature f;
         f.hasTimestamp = true;
-        f.timestamp    = RealTime::fromSeconds(d.time_s) + m_startTime;
+        f.timestamp    = RealTime::fromSeconds(d.start_time) + m_startTime;
         f.hasDuration  = true;
-        f.duration     = RealTime::fromSeconds(d.end_s - d.time_s);
+        f.duration     = RealTime::fromSeconds(d.end_time - d.start_time);
         f.label = d.species + " (" + std::to_string((int)d.confidence) + "%)";
         f.values.push_back(d.confidence);
         output[0].push_back(f);
@@ -216,8 +216,8 @@ BirdNetPlugin::parseJSON(const std::string& json) const
         Detection d;
         d.species    = str("scientific");
         d.confidence = num("confidence");
-        d.time_s     = num("time_s");
-        d.end_s      = num("end_s");
+        d.start_time     = num("start_time");
+        d.end_time      = num("end_time");
 
         if (!d.species.empty())
             detections.push_back(d);
@@ -336,8 +336,8 @@ float BirdNetPlugin::getParameter(std::string id) const {
     if (id == "threshold") return m_threshold;
     if (id == "top_k")     return (float)m_topK;
     if (id == "stride")    return m_stride;
-    if (id == "bandpass_fmin") return (float)m_bandpass_fmin;
-    if (id == "bandpass_fmax") return (float)m_bandpass_fmax;
+    if (id == "bandpass_fmin") return (float)m_fmin;
+    if (id == "bandpass_fmax") return (float)m_fmax;
     if (id == "geo_model_confidence") return m_geo_model_confidence;
     if (id == "lat") return m_lat;
     if (id == "lon") return m_lon;
@@ -349,8 +349,8 @@ void BirdNetPlugin::setParameter(std::string id, float value) {
     if (id == "threshold") m_threshold = value;
     if (id == "top_k")     m_topK = (int)value;
     if (id == "stride")    m_stride = value;
-    if (id == "bandpass_fmin") m_bandpass_fmin = (int)value;
-    if (id == "bandpass_fmax") m_bandpass_fmax = (int)value;
+    if (id == "bandpass_fmin") m_fmin = (int)value;
+    if (id == "bandpass_fmax") m_fmax = (int)value;
     if (id == "geo_model_confidence") m_geo_model_confidence = value;
     if (id == "lat") m_lat = value;
     if (id == "lon") m_lon = value;

@@ -60,8 +60,8 @@ private:
     struct Detection {
         std::string species;     // scientific name
         float       confidence;  // average confidence score in %
-        float       time_s;      // merged segment start time in seconds
-        float       end_s;       // merged segment end time in seconds
+        float       start_time;      // merged segment start time in seconds
+        float       end_time;       // merged segment end time in seconds
     };
 
     // Parses the JSON array returned by birdnet_run.py
@@ -77,8 +77,8 @@ private:
     int                m_topK;          // max species per segment
     float              m_stride;        // sliding window step in seconds
     float              m_threshold;     // minimum confidence threshold
-    int                m_bandpass_fmin; // minimum frequency for bandpass filter
-    int                m_bandpass_fmax; // maximum frequency for bandpass filter
+    int                m_fmin; // minimum frequency for bandpass filter
+    int                m_fmax; // maximum frequency for bandpass filter
     float              m_geo_model_confidence; // Minimum confidence for geographic model filtering (default: 0.03). It olny has effect if lat parameters is set different from 90.0 or -90.0.
     float              m_lat;           // Latitude for geographic filtering, 0.0 = disabled (default: 90.0)
     float              m_lon;           // Longitude for geographic filtering, 0.0 = disabled (default: 0.0)

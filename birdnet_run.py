@@ -36,8 +36,8 @@ Output:
         - species    : Common name of the detected species.
         - scientific : Scientific name of the detected species.
         - confidence : Average confidence score across merged segments (4 decimal places).
-        - time_s     : Start time of the merged detection in seconds.
-        - end_s      : End time of the merged detection in seconds.
+        - start_time     : Start time of the merged detection in seconds.
+        - end_time      : End time of the merged detection in seconds.
 
  Author: Prof. Dr. Juan G. Colonna <github.com/juancolonna>
  License: MIT
@@ -61,7 +61,7 @@ def merge_detections(detections):
     segments.
 
     Args:
-        detections : List of detection dicts sorted by time_s.
+        detections : List of detection dicts sorted by start_time.
 
     Returns:
         List of merged detection dicts.
@@ -70,7 +70,7 @@ def merge_detections(detections):
         return []
 
     # Sort by species then by start time for consistent merging
-    detections.sort(key=lambda d: (d["species"], d["time_s"]))
+    detections.sort(key=lambda d: (d["species"], d["start_time"]))
 
     merged = []
     current = dict(detections[0])
@@ -78,13 +78,13 @@ def merge_detections(detections):
     current["_conf_count"]   = 1
 
     for det in detections[1:]:
-        det_end = det["end_s"]
+        det_end = det["end_time"]
         same_species = det["species"] == current["species"]
-        overlapping  = det["time_s"] <= current["end_s"]
+        overlapping  = det["start_time"] <= current["end_time"]
 
         if same_species and overlapping:
             # Extend current segment and accumulate confidence
-            current["end_s"]       = max(current["end_s"], det_end)
+            current["end_time"]       = max(current["end_time"], det_end)
             current["_conf_sum"]  += det["confidence"]
             current["_conf_count"] += 1
         else:
@@ -93,7 +93,7 @@ def merge_detections(detections):
             del current["_conf_sum"], current["_conf_count"]
             merged.append(current)
             current = dict(det)
-            current["end_s"]       = det_end
+            current["end_time"]       = det_end
             current["_conf_sum"]   = det["confidence"]
             current["_conf_count"] = 1
 
@@ -103,7 +103,7 @@ def merge_detections(detections):
     merged.append(current)
 
     # Re-sort by start time for output
-    merged.sort(key=lambda d: d["time_s"])
+    merged.sort(key=lambda d: d["start_time"])
     return merged
 
 
@@ -162,8 +162,8 @@ def main():
             "species":    common,
             "scientific": scientific,
             "confidence": conf,
-            "time_s":     float(row['start_time']),
-            "end_s":      float(row['end_time']),
+            "start_time":     float(row['start_time']),
+            "end_time":      float(row['end_time']),
         })
 
     # Merge consecutive/overlapping detections of the same species
