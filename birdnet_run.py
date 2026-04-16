@@ -21,12 +21,12 @@ Usage:
  
 Arguments:
     wav_path   : Path to the input WAV file.
-    threshold  : Minimum confidence score to report a detection (default: 0.25).
+    threshold  : Minimum confidence score to report a detection (default: 25.0%, interval: 0-99).
     top_k      : Maximum number of species to consider per segment (default: 10).
     stride     : Sliding window step in seconds, in range [0.1, 3.0] (default: 3.0).
     freq_min   : Lower bound for the bandpass filter in Hz (default: 0).
     freq_max   : Upper bound for the bandpass filter in Hz (default: 15000).
-    geo_model_confidence : Minimum confidence for geographic model filtering (default: 0.03). It only has effect if lat and lon parameters are set.
+    geo_model_confidence : Minimum confidence for geographic model filtering (default: 3.0%, interval: 0-99). It only has effect if lat and lon parameters are set.
     lat        : Latitude for geographic filtering, 0.0 = disabled (default: 0.0).
     lon        : Longitude for geographic filtering, 0.0 = disabled (default: 0.0).
     week       : Week of the year for seasonal filtering, 0 = disabled (default: 0). It only has effect if lat and lon parameters are set.
@@ -43,6 +43,7 @@ Output:
  License: MIT
 """
  
+from calendar import week
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # suppress TensorFlow logs
  
@@ -110,12 +111,14 @@ def merge_detections(detections):
 def main():
     # Parse command-line arguments
     wav_path  = sys.argv[1]
-    threshold = float(sys.argv[2]) if len(sys.argv) > 2 else 0.25
+    # Convert threshold from percentage to 0..0.99
+    threshold = (float(sys.argv[2]) if len(sys.argv) > 2 else 25.0) / 100.0 
     top_k     = int(sys.argv[3])   if len(sys.argv) > 3 else 10
     stride    = float(sys.argv[4]) if len(sys.argv) > 4 else 3.0
     freq_min  = int(sys.argv[5])   if len(sys.argv) > 5 else 0
     freq_max  = int(sys.argv[6])   if len(sys.argv) > 6 else 15000
-    geo_model_confidence = float(sys.argv[7]) if len(sys.argv) > 7 else 0.03
+    # Convert geo_model_confidence from percentage to 0..0.99
+    geo_model_confidence = (float(sys.argv[7]) if len(sys.argv) > 7 else 3.0) / 100.0
     lat       = float(sys.argv[8]) if len(sys.argv) > 8 else 90.0
     lon       = float(sys.argv[9]) if len(sys.argv) > 9 else 0.0
     week      = int(sys.argv[10])   if len(sys.argv) > 10 else 0
@@ -130,6 +133,7 @@ def main():
         geo_model      = birdnet.load("geo", "2.4", "tf")
         species_filter = geo_model.predict(lat, lon,
                                            week=week if week > 0 else None,
+                                           # geo_model_confidence have to be a float in 0..0.99
                                            min_confidence=geo_model_confidence).to_set()
 
     # Load BirdNET acoustic model v2.4 with TensorFlow backend
@@ -137,7 +141,8 @@ def main():
 
     # Run prediction with sliding window
     results = model.predict(wav_path,
-                            default_confidence_threshold=threshold,
+                            # threshold have to be a float in 0..0.99
+                            default_confidence_threshold=threshold, 
                             top_k=top_k,
                             overlap_duration_s=overlap,
                             custom_species_list=species_filter,

@@ -22,7 +22,7 @@ Detections appear as labeled regions directly on the label track (Audacity) or a
 - Automatic bird species detection using BirdNET v2.4 (TensorFlow backend)
 - Labels appear as a label track or annotation layer with species name and confidence score
 - Nine configurable parameters via the VAMP plugin interface:
-  - **Confidence Threshold** — minimum confidence score to report a detection (default: 0.25)
+  - **Confidence Threshold** — minimum confidence score to report a detection (default: 25%, interval [0.0,0.99])
   - **Top K Species** — maximum number of species candidates per segment (default: 10)
   - **Stride (s)** — sliding window step size in seconds (default: 3.0)
   - **High-pass cutoff frequency** — minimum frequency for the bandpass filter in Hz (default: 0)
@@ -30,7 +30,7 @@ Detections appear as labeled regions directly on the label track (Audacity) or a
   - **Latitude** — latitude for geographic species filtering; 0.0 = disabled (default: 0.0)
   - **Longitude** — longitude for geographic species filtering; 0.0 = disabled (default: 0.0)
   - **Week of the Year** — week number (1–52) for seasonal filtering; 0 = disabled (default: 0)
-  - **Geographic Model Confidence** — minimum confidence for the geographic model filter (default: 0.03)
+  - **Geographic Model Confidence** — minimum confidence for the geographic model filter (default: 3.0%, interval [0.0,0.99])
 - Works on full recordings or selected segments
 - Consecutive and overlapping detections of the same species are merged automatically
 - Optional geographic and seasonal filtering using BirdNET's built-in geo model
@@ -188,7 +188,7 @@ The Geographic Model Confidence parameter controls how broadly the geo model sel
 - Re-run `./install.sh` to recompile and reconfigure
 
 **No detections produced**
-- Try lowering the **Confidence Threshold** (e.g., 0.1)
+- Try lowering the **Confidence Threshold** (e.g., 10%, interval 0%-99%)
 - Make sure the audio contains bird vocalizations
 - Check that the `uv` is correctly installed: `curl -LsSf https://astral.sh/uv/install.sh | sh`
 

@@ -40,12 +40,12 @@ using namespace Vamp;
 BirdNetPlugin::BirdNetPlugin(float inputSampleRate)
     : Plugin(inputSampleRate)
     , m_blockSize(0)
-    , m_threshold(0.25f)
+    , m_threshold(25.0f)
     , m_topK(10)
     , m_stride(3.0f)
     , m_fmin(0)
     , m_fmax(15000)
-    , m_geo_model_confidence(0.03f)
+    , m_geo_model_confidence(3.0f)
     , m_lat(90.0f)
     , m_lon(0.0f)
     , m_week(0)
@@ -235,17 +235,17 @@ size_t BirdNetPlugin::getPreferredStepSize()  const { return 1024; }
 // ── Configurable parameters ──────────────────────────────────────────────────
 
 Plugin::ParameterList BirdNetPlugin::getParameterDescriptors() const {
-    ParameterDescriptor p;
+    ParameterDescriptor p{};
     p.identifier   = "threshold";
     p.name         = "Confidence Threshold";
-    p.description  = "Minimum confidence score to report a detection";
-    p.unit         = "";
+    p.description  = "Minimum confidence score (%) to report a detection";
+    p.unit         = "%";
     p.minValue     = 0.0f;
-    p.maxValue     = 1.0f;
-    p.defaultValue = 0.25f;
+    p.maxValue     = 99.0f;
+    p.defaultValue = 25.0f;
     p.isQuantized  = false;
 
-    ParameterDescriptor p2;
+    ParameterDescriptor p2{};
     p2.identifier   = "top_k";
     p2.name         = "Top K Species";
     p2.description  = "Maximum number of species candidates per segment";
@@ -256,7 +256,7 @@ Plugin::ParameterList BirdNetPlugin::getParameterDescriptors() const {
     p2.isQuantized  = true;
     p2.quantizeStep = 1.0f;
 
-    ParameterDescriptor p3;
+    ParameterDescriptor p3{};
     p3.identifier   = "stride";
     p3.name         = "Stride";
     p3.description  = "Sliding window step size in seconds";
@@ -266,7 +266,7 @@ Plugin::ParameterList BirdNetPlugin::getParameterDescriptors() const {
     p3.defaultValue = 3.0f;
     p3.isQuantized  = false;
 
-    ParameterDescriptor p4;
+    ParameterDescriptor p4{};
     p4.identifier   = "bandpass_fmin";
     p4.name         = "High-pass cutoff frequency";
     p4.description  = "Minimum frequency for bandpass filter";
@@ -277,7 +277,7 @@ Plugin::ParameterList BirdNetPlugin::getParameterDescriptors() const {
     p4.isQuantized  = true;
     p4.quantizeStep = 1.0f;
 
-    ParameterDescriptor p5;
+    ParameterDescriptor p5{};
     p5.identifier   = "bandpass_fmax";
     p5.name         = "Low-pass cutoff frequency";
     p5.description  = "Maximum frequency for bandpass filter";
@@ -288,17 +288,17 @@ Plugin::ParameterList BirdNetPlugin::getParameterDescriptors() const {
     p5.isQuantized  = true;
     p5.quantizeStep = 1.0f;
 
-    ParameterDescriptor p6;
+    ParameterDescriptor p6{};
     p6.identifier   = "geo_model_confidence";
     p6.name         = "Geographic Model Confidence";
-    p6.description  = "Minimum confidence for geographic model filtering. It only has effect if lat and lon parameters are set.";
-    p6.unit         = "";
+    p6.description  = "Minimum confidence (%) for geographic model filtering. It only has effect if lat and lon parameters are set.";
+    p6.unit         = "%";
     p6.minValue     = 0.0f;
-    p6.maxValue     = 1.0f;
-    p6.defaultValue = 0.03f;
+    p6.maxValue     = 99.0f;
+    p6.defaultValue = 3.0f;
     p6.isQuantized  = false;
 
-    ParameterDescriptor p7;
+    ParameterDescriptor p7{};
     p7.identifier   = "lat";
     p7.name         = "Latitude";
     p7.description  = "Latitude for geographic filtering, 0.0 = disabled";
@@ -308,7 +308,7 @@ Plugin::ParameterList BirdNetPlugin::getParameterDescriptors() const {
     p7.defaultValue = 90.0f;
     p7.isQuantized  = false;
 
-    ParameterDescriptor p8;
+    ParameterDescriptor p8{};
     p8.identifier   = "lon";
     p8.name         = "Longitude";
     p8.description  = "Longitude for geographic filtering, 0.0 = disabled";
@@ -318,7 +318,7 @@ Plugin::ParameterList BirdNetPlugin::getParameterDescriptors() const {
     p8.defaultValue = 0.0f;
     p8.isQuantized  = false;
 
-    ParameterDescriptor p9;
+    ParameterDescriptor p9{};
     p9.identifier   = "week";
     p9.name         = "Week of the Year";
     p9.description  = "Week of the year for seasonal filtering, 0 = disabled. It only has effect if lat and lon parameters are set.";
