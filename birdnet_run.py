@@ -125,34 +125,27 @@ def main():
     overlap = max(0.0, 3.0 - stride)      # overlap = window_duration - stride
 
     # Apply geographic/seasonal species filter if coordinates are provided
-    use_geo = (lat != 90.0 and lat != -90.0)
-    if use_geo:
+    species_filter = None
+    if (lat != 90.0 and lat != -90.0):
         geo_model      = birdnet.load("geo", "2.4", "tf")
-        geo_result     = geo_model.predict(lat, lon,
+        species_filter = geo_model.predict(lat, lon,
                                            week=week if week > 0 else None,
-                                           min_confidence=geo_model_confidence)
-        species_filter = geo_result.to_set()
-    else:
-        species_filter = None
+                                           min_confidence=geo_model_confidence).to_set()
 
     # Load BirdNET acoustic model v2.4 with TensorFlow backend
     model = birdnet.load("acoustic", "2.4", "tf")
 
     # Run prediction with sliding window
-    result = model.predict( 
-        wav_path,
-        default_confidence_threshold=threshold,
-        top_k=top_k,
-        overlap_duration_s=overlap,
-        custom_species_list=species_filter,
-        bandpass_fmin=freq_min,
-        bandpass_fmax=freq_max,
-    )
-
-    data = result.to_structured_array()
+    results = model.predict(wav_path,
+                            default_confidence_threshold=threshold,
+                            top_k=top_k,
+                            overlap_duration_s=overlap,
+                            custom_species_list=species_filter,
+                            bandpass_fmin=freq_min,
+                            bandpass_fmax=freq_max).to_structured_array()
     detections = []
     
-    for row in data:
+    for row in results:
         species    = row['species_name']
         scientific = species.split("_")[0]
         common     = species.split("_")[1]
