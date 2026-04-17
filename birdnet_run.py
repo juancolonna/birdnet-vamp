@@ -10,7 +10,7 @@ birdnet_run.py — BirdNET inference script for the Audacity or Sonic-Visualiser
  
 This script is called by the VAMP plugin (BirdNetPlugin.cpp) as a subprocess.
 It loads a BirdNET acoustic model, runs species prediction on a WAV file,
-and prints the results as a JSON array to stdout.
+and prints the predictions as a JSON array to stdout.
  
 Consecutive or overlapping detections of the same species are merged into a
 single detection spanning from the first to the last segment, with confidence
@@ -140,7 +140,7 @@ def main():
     model = birdnet.load("acoustic", "2.4", "tf")
 
     # Run prediction with sliding window
-    results = model.predict(wav_path,
+    predictions = model.predict(wav_path,
                             # threshold have to be a float in 0..0.99
                             default_confidence_threshold=threshold, 
                             top_k=top_k,
@@ -150,7 +150,7 @@ def main():
                             bandpass_fmax=freq_max).to_structured_array()
     detections = []
     
-    for row in results:
+    for row in predictions:
         species    = row['species_name']
         scientific = species.split("_")[0]
         common     = species.split("_")[1]
@@ -167,7 +167,7 @@ def main():
     # Merge consecutive/overlapping detections of the same species
     detections = merge_detections(detections)
 
-    # Output results as JSON to stdout (read by the VAMP plugin via popen)
+    # Output predictions as JSON to stdout (read by the VAMP plugin via popen)
     print(json.dumps(detections), flush=True)
 
 
