@@ -1,0 +1,33 @@
+name: C++ Compilation
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        # Instala apenas o necessário para o CMake e o SDK conforme o seu install.sh
+        run: |
+          sudo apt update
+          sudo apt install -y cmake g++ vamp-plugin-sdk 
+
+      - name: Compile on Linux
+        # Executa exatamente os comandos da seção "Compile the VAMP plugin"
+        run: |
+          mkdir build && cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release
+          make -j$(nproc) 
+
+      - name: Upload Binary Only
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-binary-${{ matrix.os }}
+          path: build/birdnet-vamp.so
