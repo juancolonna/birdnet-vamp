@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install Dependencies
         # Instala apenas o necessário para o CMake e o SDK conforme o seu install.sh
@@ -27,7 +27,7 @@ jobs:
           make -j$(nproc) 
 
       - name: Upload Binary Only
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: plugin-binary-${{ matrix.os }}
           path: build/birdnet-vamp.so
