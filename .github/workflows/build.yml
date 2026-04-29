@@ -1,6 +1,16 @@
 name: C++ Compilation
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
+    tags:
+      - 'v*' # Dispara quando você envia uma tag como v1.0.0
+  pull_request:
+    branches: [ main ]
+
+# Permissões necessárias para criar a Release e fazer upload dos arquivos
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -26,8 +36,23 @@ jobs:
           cmake .. -DCMAKE_BUILD_TYPE=Release
           make -j$(nproc) 
 
+      # Importante: Renomear o arquivo para não haver conflito na Release
+      - name: Prepare Binary
+        run: mv build/birdnet-vamp.so birdnet-vamp-${{ matrix.os }}.so
+
       - name: Upload Binary Only
         uses: actions/upload-artifact@v7
         with:
           name: plugin-binary-${{ matrix.os }}
-          path: build/birdnet-vamp.so
+          path: birdnet-vamp-${{ matrix.os }}.so
+        
+      - name: Create Release and Upload Assets
+        uses: softprops/action-gh-release@v3
+        # Este passo só roda se você criar uma TAG (ex: v1.1.5)
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            birdnet-vamp-${{ matrix.os }}.so
+            birdnet_run.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
