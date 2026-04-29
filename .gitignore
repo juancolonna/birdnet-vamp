@@ -3,3 +3,5 @@ build/
 install (Cópia).sh
 graphify-out/
 .graphifyignore
+__pycache__/
+*.pyc
