@@ -252,7 +252,7 @@ Plugin::ParameterList BirdNetPlugin::getParameterDescriptors() const {
     p.name         = "Confidence Threshold";
     p.description  = "Minimum confidence score (%) to report a detection";
     p.unit         = "%";
-    p.minValue     = 0.0f;
+    p.minValue     = 1.0f;
     p.maxValue     = 99.0f;
     p.defaultValue = 25.0f;
     p.isQuantized  = false;
@@ -305,7 +305,7 @@ Plugin::ParameterList BirdNetPlugin::getParameterDescriptors() const {
     p6.name         = "Geographic Model Confidence";
     p6.description  = "Minimum confidence (%) for geographic model filtering. It only has effect if lat and lon parameters are set.";
     p6.unit         = "%";
-    p6.minValue     = 0.0f;
+    p6.minValue     = 1.0f;
     p6.maxValue     = 99.0f;
     p6.defaultValue = 3.0f;
     p6.isQuantized  = false;
