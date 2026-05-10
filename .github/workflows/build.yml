@@ -26,44 +26,49 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Install Dependencies
-        # Instala apenas o necessário para o CMake e o SDK conforme o seu install.sh
+        # Instala apenas o necessário para o CMake e o VAMP SDK.
         run: |
           sudo apt update
           sudo apt install -y cmake g++ vamp-plugin-sdk
 
       - name: Check static VAMP SDK
-        # Confirma que libvamp-sdk.a existe, pois o novo CMakeLists.txt usa linkagem estática do VAMP SDK.
+        # Confirma que libvamp-sdk.a existe, pois o CMakeLists.txt usa linkagem estática do VAMP SDK.
         run: |
           find /usr/lib /usr/lib64 -name "libvamp-sdk.a" -print
 
       - name: Compile on Linux
-        # Executa exatamente os comandos da seção "Compile the VAMP plugin"
         run: |
           mkdir build && cd build
           cmake .. -DCMAKE_BUILD_TYPE=Release
           make -j$(nproc)
 
       - name: Prepare Binary
-        run: mv build/birdnet-vamp.so birdnet-vamp-linux_x86_64.so
+        run: |
+          mv build/birdnet-vamp.so birdnet-vamp-linux_x86_64.so
 
       - name: Check dynamic dependencies
         # Idealmente não devem aparecer: libvamp-sdk.so, libstdc++.so.6, libgcc_s.so.1.
         run: |
           ldd birdnet-vamp-linux_x86_64.so || true
 
-      - name: Upload Binary Only
+      - name: Upload Plugin Pack
         uses: actions/upload-artifact@v7
         with:
           name: birdnet-vamp-linux_x86_64
-          path: birdnet-vamp-linux_x86_64.so
+          path: |
+            birdnet-vamp-linux_x86_64.so
+            birdnet_run.py
+            birdnet_labels.csv
+
+      - name: Create Release Zip
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          zip -j birdnet-vamp-linux_x86_64.zip birdnet-vamp-linux_x86_64.so birdnet_run.py birdnet_labels.csv
 
       - name: Create Release and Upload Assets
         uses: softprops/action-gh-release@v3
-        # Este passo só roda se você criar uma TAG (ex: v1.1.5)
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: |
-            birdnet-vamp-linux_x86_64.so
-            birdnet_run.py
+          files: birdnet-vamp-linux_x86_64.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
