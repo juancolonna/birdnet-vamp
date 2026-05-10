@@ -17,7 +17,8 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest] # [ubuntu-22.04, ubuntu-24.04]
+        os: [ubuntu-22.04]
+
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -28,32 +29,41 @@ jobs:
         # Instala apenas o necessário para o CMake e o SDK conforme o seu install.sh
         run: |
           sudo apt update
-          sudo apt install -y cmake g++ vamp-plugin-sdk 
+          sudo apt install -y cmake g++ vamp-plugin-sdk
+
+      - name: Check static VAMP SDK
+        # Confirma que libvamp-sdk.a existe, pois o novo CMakeLists.txt usa linkagem estática do VAMP SDK.
+        run: |
+          find /usr/lib /usr/lib64 -name "libvamp-sdk.a" -print
 
       - name: Compile on Linux
         # Executa exatamente os comandos da seção "Compile the VAMP plugin"
         run: |
           mkdir build && cd build
           cmake .. -DCMAKE_BUILD_TYPE=Release
-          make -j$(nproc) 
+          make -j$(nproc)
 
-      # Importante: Renomear o arquivo para não haver conflito na Release
       - name: Prepare Binary
-        run: mv build/birdnet-vamp.so birdnet-vamp-${{ matrix.os }}.so
+        run: mv build/birdnet-vamp.so birdnet-vamp-linux_x86_64.so
+
+      - name: Check dynamic dependencies
+        # Idealmente não devem aparecer: libvamp-sdk.so, libstdc++.so.6, libgcc_s.so.1.
+        run: |
+          ldd birdnet-vamp-linux_x86_64.so || true
 
       - name: Upload Binary Only
         uses: actions/upload-artifact@v7
         with:
-          name: plugin-binary-${{ matrix.os }}
-          path: birdnet-vamp-${{ matrix.os }}.so
-        
+          name: birdnet-vamp-linux_x86_64
+          path: birdnet-vamp-linux_x86_64.so
+
       - name: Create Release and Upload Assets
         uses: softprops/action-gh-release@v3
         # Este passo só roda se você criar uma TAG (ex: v1.1.5)
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            birdnet-vamp-${{ matrix.os }}.so
+            birdnet-vamp-linux_x86_64.so
             birdnet_run.py
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
