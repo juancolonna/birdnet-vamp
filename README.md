@@ -44,44 +44,11 @@ Detections appear as labeled regions directly on the label track (Audacity) or a
 
 ## Installation
 
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/juancolonna/birdnet-vamp.git
-cd birdnet-vamp
-```
-
-> **Note:** This repository needs Git Large File Storage (LFS).
-
-### 2. Run the installation script
-
-```bash
-chmod +x install.sh
-./install.sh
-```
-
-The script will automatically:
-- Install system build dependencies (`cmake`, `g++`, `vamp-plugin-sdk`)
-- Create a `uv` virtual environment with Python 3.12
-- Install the `birdnet` Python package inside the `uv` environment
-- Compile the VAMP plugin into the `build/` directory
-- Copy `birdnet_run.py` and other required files into `build/` alongside the plugin
-- Create the ~/vamp directory in your Linux HOME folder, then copy the plugin files into it.
-
-> **Note:** The installation does not modify or remove any existing Audacity or Sonic-Visualiser installation on your system. The bundled AppImage runs independently.
-
-### 3. Configuration and execution scripts
-
-```bash
-./audacity.sh
-```
-or
-```bash
-./sonic-visualiser.sh
-```
-
-- Verifies the integrity of the *.AppImage files via SHA256 checksum.
-- Creates a desktop shortcut named **Audacity-BirdNet** or **Sonic-BirdNet** in your application menu.
+- Create a `vamp` folder in your home directory.
+- Download the `birdnet-vamp-linux_x86_64.zip` file and unzip it.
+- Copy the three extracted files: `birdnet-vamp-linux_x86_64.so`, `birdnet_run.py`, and `birdnet_labels.csv` into the `vamp` folder.
+- Install `uv` to create the virtual environment.
+- Optional: download and run either the Audacity AppImage or the Sonic Visualiser AppImage.
 
 ## Running
 
