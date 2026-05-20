@@ -44,26 +44,26 @@ jobs:
 
       - name: Prepare Binary
         run: |
-          mv build/birdnet-vamp.so birdnet-vamp-linux_x86_64.so
+          mv build/birdnet-vamp.so birdnet-vamp.so
 
       - name: Check dynamic dependencies
         # Idealmente não devem aparecer: libvamp-sdk.so, libstdc++.so.6, libgcc_s.so.1.
         run: |
-          ldd birdnet-vamp-linux_x86_64.so || true
+          ldd birdnet-vamp.so || true
 
       - name: Upload Plugin Pack
         uses: actions/upload-artifact@v7
         with:
           name: birdnet-vamp-linux_x86_64
           path: |
-            birdnet-vamp-linux_x86_64.so
+            birdnet-vamp.so
             birdnet_run.py
             birdnet_labels.csv
 
       - name: Create Release Zip
         if: startsWith(github.ref, 'refs/tags/')
         run: |
-          zip -j birdnet-vamp-linux_x86_64.zip birdnet-vamp-linux_x86_64.so birdnet_run.py birdnet_labels.csv
+          zip -j birdnet-vamp-linux_x86_64.zip birdnet-vamp.so birdnet_run.py birdnet_labels.csv
 
       - name: Create Release and Upload Assets
         uses: softprops/action-gh-release@v3
