@@ -1,9 +1,10 @@
-# 🎶 🐦‍⬛ BirdNet VAMP Plugin for Audacity and Sonic-Visualiser
+# 🎶 🐦‍⬛ BirdNET VAMP Plugin for Audacity and Sonic-Visualiser
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
-[![Audacity 3.7.7](https://img.shields.io/badge/Audacity-3.7.7-2C7ED6.svg)](https://www.audacityteam.org/)
 [![C++](https://img.shields.io/badge/C%2B%2B-supported-00599C.svg)](https://isocpp.org/)
+[![Audacity 3.7.7](https://img.shields.io/badge/Audacity-3.7.7-2C7ED6.svg)](https://www.audacityteam.org/)
+[![Sonic-Visualiser 5.2.1](https://img.shields.io/badge/SonicVisualiser-5.2.1.svg)](https://www.sonicvisualiser.org/)
 
 A VAMP plugin for [Audacity](https://www.audacityteam.org/) and/or [Sonic-Visualiser](https://sonicvisualiser.org/) that runs [BirdNET v2.4](https://github.com/birdnet-team/birdnet) inference (using the `birdnet` Python package, compatible with BirdNET v2.4) to automatically detect and label bird vocalizations in audio recordings.
 
@@ -12,10 +13,10 @@ Detections appear as labeled regions directly on the label track (Audacity) or a
 ### How it looks in Audacity
 ![BirdNET VAMP Plugin in Audacity](assets/screenshot_audacity.png)
 
-> ⚠️ **Important:** This repository includes a compiled fork of Audacity 3.7.7 with a VAMP plugin bug fix for proper multi-track support (bug fixed by me 😉). To work correctly, run it with **Audacity-VampFix-3.7.7-x86_64.AppImage**.
-
 ### How it looks in Sonic-Visualiser
 ![BirdNET VAMP Plugin in Sonic-Visualiser](assets/screenshot_sonic.png)
+
+> ⚠️ **Important:** This repository includes a compiled fork of Audacity 3.7.7 with a VAMP plugin bug fix for proper multi-track support (bug fixed by me 😉). To work correctly, run it with **Audacity-VampFix-3.7.7-x86_64.AppImage**.
 
 ## Features
 
@@ -27,10 +28,11 @@ Detections appear as labeled regions directly on the label track (Audacity) or a
   - **Stride (s)** — sliding window step size in seconds (default: 3.0)
   - **High-pass cutoff frequency** — minimum frequency for the bandpass filter in Hz (default: 0)
   - **Low-pass cutoff frequency** — maximum frequency for the bandpass filter in Hz (default: 15000)
-  - **Latitude** — latitude for geographic species filtering; 0.0 = disabled (default: 0.0)
-  - **Longitude** — longitude for geographic species filtering; 0.0 = disabled (default: 0.0)
+  - **Latitude** — latitude for geographic species filtering; 90.0 or -90.0 = disabled (default: 90.0)
+  - **Longitude** — longitude for geographic species filtering (default: 0.0)
   - **Week of the Year** — week number (1–52) for seasonal filtering; 0 = disabled (default: 0)
   - **Geographic Model Confidence** — minimum confidence for the geographic model filter (default: 3.0%, interval [1:99])
+
 - Works on full recordings or selected segments
 - Consecutive and overlapping detections of the same species are merged automatically
 - Optional geographic and seasonal filtering using BirdNET's built-in geo model
@@ -48,24 +50,20 @@ Detections appear as labeled regions directly on the label track (Audacity) or a
 - Download the `birdnet-vamp-linux_x86_64.zip` file and unzip it.
 - Copy the three extracted files: `birdnet-vamp-linux_x86_64.so`, `birdnet_run.py`, and `birdnet_labels.csv` into the `vamp` folder.
 - Install `uv` to create the virtual environment.
-- Optional: download and run either the Audacity AppImage or the Sonic Visualiser AppImage.
+- Download and run either the Audacity AppImage or the Sonic Visualiser AppImage.
 
 ## Running
 
-### From the application menu
-
-After installation, open **Audacity-BirdNet** or **Sonic-BirdNet** from your application menu. The shortcut automatically sets `VAMP_PATH` to the correct directory.
-
 ### From the terminal
 
-Run this command from inside the `birdnet-vamp` directory:
+Run this command:
 
 ```bash
-VAMP_PATH=$PWD/build ./Audacity-VampFix-3.7.7-x86_64.AppImage
+VAMP_PATH=$HOME/vamp ./Audacity-VampFix-3.7.7-x86_64.AppImage
 ```
 or
 ```bash
-VAMP_PATH=$PWD/build ./SonicVisualiser-5.2.1-x86_64.AppImage
+VAMP_PATH=$HOME/vamp ./SonicVisualiser-5.2.1-x86_64.AppImage
 ```
 
 ## Usage on Audacity
@@ -77,11 +75,11 @@ VAMP_PATH=$PWD/build ./SonicVisualiser-5.2.1-x86_64.AppImage
 5. Click **OK** and wait for the analysis to complete
 6. Detections appear as labeled regions on a new label track
 
-> **Note:** Stereo audio files are automatically mixed down to mono by averaging both channels when you execute the BirdNet plugin, which may produce slightly different results compared to a native mono recording. If you are unsure, convert your audio to mono before running **Analyze → BirdNET**.
+> **Note:** Stereo audio files are automatically mixed down to mono by averaging both channels when you execute the BirdNET plugin, which may produce slightly different results compared to a native mono recording. If you are unsure, convert your audio to mono before running **Analyze → BirdNET**.
 
 ## Usage on Sonic-Visualiser
 
-1. Open an audio file in Sonic-BirdNet (**File → Open**)
+1. Open an audio file in Sonic-BirdNET (**File → Open**)
 2. Optionally select a specific region of the track to analyze
 3. Go to **Transform → Analysis by Plugin Name → BirdNET**
 4. Adjust parameters if desired
@@ -107,29 +105,6 @@ Where `XX%` is the average confidence score across all merged segments.
 
 > **Tip:** The output labels can be exported in CSV format via **File → Export Other → Export Labels** in Audacity, or via **File → Export Annotation Layer** in Sonic Visualiser, for further analysis.
 
-## Project structure
-
-```
-birdnet-vamp/
-├── BirdNetPlugin.cpp                      # VAMP plugin implementation (C++)
-├── BirdNetPlugin.h                        # VAMP plugin header
-├── birdnet_run.py                         # BirdNET inference script (Python)
-├── CMakeLists.txt                         # Build configuration
-├── install.sh                             # Installation script
-├── audacity.sh                            # Configuration script
-├── sonic-visualiser.sh                    # Configuration script
-├── Audacity-VampFix-3.7.7-x86_64.AppImage # Bundled Audacity AppImage
-├── SonicVisualiser-5.2.1-x86_64.AppImage  # Bundled Sonic-Visualiser AppImage
-├── birdnet-vamp_COPYING.txt               # File needed by Sonic-Visualiser
-├── birdnet-vamp.cat                       # File needed by Sonic-Visualiser
-├── birdnet-vamp.n3                        # File needed by Sonic-Visualiser
-├── test audio                             # Folder containing some .wav audio files for testing
-├── assets                                 # Folder containing screenshots and icons
-└── build/                                 # Compiled plugin (created by install.sh)
-    ├── birdnet-vamp.so                    # Compiled VAMP plugin
-    └── birdnet_run.py                     # Copy of the inference script
-```
-
 ## How it works
 
 1. When **BirdNET** is triggered, the VAMP plugin accumulates all audio samples into a buffer
@@ -144,15 +119,14 @@ birdnet-vamp/
 
 When Latitude 'and' Longitude are set to non-zero values, the plugin activates BirdNET's geographic model to filter the species list before running acoustic inference. This restricts detections to species that are realistically expected at the given location, significantly reducing false positives. Optionally, setting Week of the Year (1–52) further narrows the filter to species expected at that location during that season. For example, a migratory species present only in summer will be excluded outside its expected seasonal window.
 
-The Geographic Model Confidence parameter controls how broadly the geo model selects candidate species. Lower values (e.g., 0.01) include more species in the filter; higher values (e.g., 0.1) apply a stricter regional filter.
+The Geographic Model Confidence parameter controls how broadly the geo model selects candidate species. Lower values (e.g., 1%) include more species in the filter; higher values (e.g., 10%) apply a stricter regional filter.
 
 > **Note:** Geographic filtering has no effect if any, Latitude or Longitude, are left at 0.0.
 
 ## Troubleshooting
 
 **Plugin does not appear in Analyze menu**
-- Make sure `VAMP_PATH` points to the `build/` directory
-- Re-run `./install.sh` to recompile and reconfigure
+- Make sure `VAMP_PATH` points to the `vamp/` directory
 
 **No detections produced**
 - Try lowering the **Confidence Threshold** (e.g., 10%, interval 0%-99%)
@@ -162,6 +136,10 @@ The Geographic Model Confidence parameter controls how broadly the geo model sel
 **Audacity shows "not responding" during analysis**
 - This is expected — BirdNET inference with TensorFlow can take 10–30 seconds depending on audio length
 - Click **Wait** and the analysis will complete normally
+
+**Plugin fails to run or does not appear to start analysis**
+- Run Audacity or Sonic Visualiser from the terminal to see the plugin error output.
+- If you see `Unsupported VAMP block configuration`, the host configuration is not compatible with this plugin. The plugin currently requires `stepSize` and `blockSize` to be equal (`stepSize == blockSize`).
 
 ## Citation
 

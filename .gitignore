@@ -5,3 +5,6 @@ graphify-out/
 .graphifyignore
 __pycache__/
 *.pyc
+install.sh
+sonic-visualiser.sh
+audacity.sh
